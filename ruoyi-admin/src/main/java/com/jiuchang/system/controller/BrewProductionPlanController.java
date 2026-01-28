@@ -1,6 +1,7 @@
 package com.jiuchang.system.controller;
 
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ import com.jiuchang.common.annotation.Log;
 import com.jiuchang.common.core.controller.BaseController;
 import com.jiuchang.common.core.domain.AjaxResult;
 import com.jiuchang.common.enums.BusinessType;
+import com.jiuchang.common.utils.SecurityUtils;
 import com.jiuchang.system.domain.BrewProductionPlan;
 import com.jiuchang.system.service.IBrewProductionPlanService;
+import com.jiuchang.system.service.IBrewProductionBatchService;
 import com.jiuchang.common.utils.poi.ExcelUtil;
 import com.jiuchang.common.core.page.TableDataInfo;
 
@@ -33,6 +36,9 @@ public class BrewProductionPlanController extends BaseController
 {
     @Autowired
     private IBrewProductionPlanService brewProductionPlanService;
+
+    @Autowired
+    private IBrewProductionBatchService brewProductionBatchService;
 
     /**
      * 查询ç”Ÿäº§è®¡åˆ’列表
@@ -100,5 +106,22 @@ public class BrewProductionPlanController extends BaseController
     public AjaxResult remove(@PathVariable Long[] planIds)
     {
         return toAjax(brewProductionPlanService.deleteBrewProductionPlanByPlanIds(planIds));
+    }
+
+    /**
+     * 启动生产
+     */
+    @PreAuthorize("@ss.hasPermi('system:plan:edit')")
+    @Log(title = "启动生产", businessType = BusinessType.UPDATE)
+    @PostMapping("/startProduction")
+    public AjaxResult startProduction(@RequestBody Map<String, Object> params)
+    {
+        Long planId = Long.valueOf(params.get("planId").toString());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> materialList = (List<Map<String, Object>>) params.get("materialList");
+        String operatorName = SecurityUtils.getUsername();
+        
+        String batchNo = brewProductionBatchService.startProduction(planId, materialList, operatorName);
+        return success(batchNo);
     }
 }

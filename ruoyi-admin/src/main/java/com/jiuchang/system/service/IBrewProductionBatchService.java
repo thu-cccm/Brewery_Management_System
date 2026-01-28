@@ -58,4 +58,14 @@ public interface IBrewProductionBatchService
      * @return ??
      */
     public int deleteBrewProductionBatchByBatchId(Long batchId);
+
+    /**
+     * 启动生产（生成批次号、扣减库存、记录库存流水）
+     * 
+     * @param planId 生产计划ID
+     * @param materialList 原料用量列表
+     * @param operatorName 操作人
+     * @return 生成的批次号
+     */
+    public String startProduction(Long planId, java.util.List<java.util.Map<String, Object>> materialList, String operatorName);
 }
