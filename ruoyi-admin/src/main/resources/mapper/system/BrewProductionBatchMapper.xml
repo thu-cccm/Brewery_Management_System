@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewProductionBatchMapper">
+    
+    <resultMap type="BrewProductionBatch" id="BrewProductionBatchResult">
+        <result property="batchId"    column="batch_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="templateId"    column="template_id"    />
+        <result property="actualOutput"    column="actual_output"    />
+        <result property="productionDate"    column="production_date"    />
+        <result property="fermentationStart"    column="fermentation_start"    />
+        <result property="fermentationEnd"    column="fermentation_end"    />
+        <result property="fermentationDays"    column="fermentation_days"    />
+        <result property="environmentTemp"    column="environment_temp"    />
+        <result property="environmentHumidity"    column="environment_humidity"    />
+        <result property="responsiblePerson"    column="responsible_person"    />
+        <result property="batchStatus"    column="batch_status"    />
+        <result property="qualityStatus"    column="quality_status"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <resultMap id="BrewProductionBatchBrewBatchMaterialResult" type="BrewProductionBatch" extends="BrewProductionBatchResult">
+        <collection property="brewBatchMaterialList" ofType="BrewBatchMaterial" column="batch_id" select="selectBrewBatchMaterialList" />
+    </resultMap>
+
+    <resultMap type="BrewBatchMaterial" id="BrewBatchMaterialResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialBatchNo"    column="material_batch_no"    />
+        <result property="plannedQuantity"    column="planned_quantity"    />
+        <result property="actualQuantity"    column="actual_quantity"    />
+        <result property="materialCost"    column="material_cost"    />
+        <result property="useTime"    column="use_time"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewProductionBatchVo">
+        select batch_id, batch_no, plan_id, category_id, template_id, actual_output, production_date, fermentation_start, fermentation_end, fermentation_days, environment_temp, environment_humidity, responsible_person, batch_status, quality_status, remark, create_by, create_time, update_by, update_time, del_flag from brew_production_batch
+    </sql>
+
+    <select id="selectBrewProductionBatchList" parameterType="BrewProductionBatch" resultMap="BrewProductionBatchResult">
+        <include refid="selectBrewProductionBatchVo"/>
+        <where>  
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="planId != null "> and plan_id = #{planId}</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="templateId != null "> and template_id = #{templateId}</if>
+            <if test="actualOutput != null "> and actual_output = #{actualOutput}</if>
+            <if test="productionDate != null "> and production_date = #{productionDate}</if>
+            <if test="fermentationStart != null "> and fermentation_start = #{fermentationStart}</if>
+            <if test="fermentationEnd != null "> and fermentation_end = #{fermentationEnd}</if>
+            <if test="fermentationDays != null "> and fermentation_days = #{fermentationDays}</if>
+            <if test="environmentTemp != null "> and environment_temp = #{environmentTemp}</if>
+            <if test="environmentHumidity != null "> and environment_humidity = #{environmentHumidity}</if>
+            <if test="responsiblePerson != null  and responsiblePerson != ''"> and responsible_person = #{responsiblePerson}</if>
+            <if test="batchStatus != null  and batchStatus != ''"> and batch_status = #{batchStatus}</if>
+            <if test="qualityStatus != null  and qualityStatus != ''"> and quality_status = #{qualityStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewProductionBatchByBatchId" parameterType="Long" resultMap="BrewProductionBatchBrewBatchMaterialResult">
+        select batch_id, batch_no, plan_id, category_id, template_id, actual_output, production_date, fermentation_start, fermentation_end, fermentation_days, environment_temp, environment_humidity, responsible_person, batch_status, quality_status, remark, create_by, create_time, update_by, update_time, del_flag
+        from brew_production_batch
+        where batch_id = #{batchId}
+    </select>
+
+    <select id="selectBrewBatchMaterialList" resultMap="BrewBatchMaterialResult">
+        select record_id, batch_no, material_id, material_batch_no, planned_quantity, actual_quantity, material_cost, use_time, operator_name, create_by, create_time, update_by, update_time, del_flag
+        from brew_batch_material
+        where batch_no = #{batch_no}
+    </select>
+
+    <insert id="insertBrewProductionBatch" parameterType="BrewProductionBatch" useGeneratedKeys="true" keyProperty="batchId">
+        insert into brew_production_batch
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="planId != null">plan_id,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="templateId != null">template_id,</if>
+            <if test="actualOutput != null">actual_output,</if>
+            <if test="productionDate != null">production_date,</if>
+            <if test="fermentationStart != null">fermentation_start,</if>
+            <if test="fermentationEnd != null">fermentation_end,</if>
+            <if test="fermentationDays != null">fermentation_days,</if>
+            <if test="environmentTemp != null">environment_temp,</if>
+            <if test="environmentHumidity != null">environment_humidity,</if>
+            <if test="responsiblePerson != null">responsible_person,</if>
+            <if test="batchStatus != null">batch_status,</if>
+            <if test="qualityStatus != null">quality_status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="planId != null">#{planId},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="templateId != null">#{templateId},</if>
+            <if test="actualOutput != null">#{actualOutput},</if>
+            <if test="productionDate != null">#{productionDate},</if>
+            <if test="fermentationStart != null">#{fermentationStart},</if>
+            <if test="fermentationEnd != null">#{fermentationEnd},</if>
+            <if test="fermentationDays != null">#{fermentationDays},</if>
+            <if test="environmentTemp != null">#{environmentTemp},</if>
+            <if test="environmentHumidity != null">#{environmentHumidity},</if>
+            <if test="responsiblePerson != null">#{responsiblePerson},</if>
+            <if test="batchStatus != null">#{batchStatus},</if>
+            <if test="qualityStatus != null">#{qualityStatus},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewProductionBatch" parameterType="BrewProductionBatch">
+        update brew_production_batch
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no = #{batchNo},</if>
+            <if test="planId != null">plan_id = #{planId},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="actualOutput != null">actual_output = #{actualOutput},</if>
+            <if test="productionDate != null">production_date = #{productionDate},</if>
+            <if test="fermentationStart != null">fermentation_start = #{fermentationStart},</if>
+            <if test="fermentationEnd != null">fermentation_end = #{fermentationEnd},</if>
+            <if test="fermentationDays != null">fermentation_days = #{fermentationDays},</if>
+            <if test="environmentTemp != null">environment_temp = #{environmentTemp},</if>
+            <if test="environmentHumidity != null">environment_humidity = #{environmentHumidity},</if>
+            <if test="responsiblePerson != null">responsible_person = #{responsiblePerson},</if>
+            <if test="batchStatus != null">batch_status = #{batchStatus},</if>
+            <if test="qualityStatus != null">quality_status = #{qualityStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where batch_id = #{batchId}
+    </update>
+
+    <delete id="deleteBrewProductionBatchByBatchId" parameterType="Long">
+        delete from brew_production_batch where batch_id = #{batchId}
+    </delete>
+
+    <delete id="deleteBrewProductionBatchByBatchIds" parameterType="String">
+        delete from brew_production_batch where batch_id in 
+        <foreach item="batchId" collection="array" open="(" separator="," close=")">
+            #{batchId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteBrewBatchMaterialByBatchNos" parameterType="String">
+        delete from brew_batch_material where batch_no in 
+        <foreach item="batchNo" collection="array" open="(" separator="," close=")">
+            #{batchNo}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBrewBatchMaterialByBatchNo" parameterType="Long">
+        delete from brew_batch_material where batch_no = #{batchNo}
+    </delete>
+
+    <insert id="batchBrewBatchMaterial">
+        insert into brew_batch_material( record_id, batch_no, material_id, material_batch_no, planned_quantity, actual_quantity, material_cost, use_time, operator_name, create_by, create_time, update_by, update_time, del_flag) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.recordId}, #{item.batchNo}, #{item.materialId}, #{item.materialBatchNo}, #{item.plannedQuantity}, #{item.actualQuantity}, #{item.materialCost}, #{item.useTime}, #{item.operatorName}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, #{item.delFlag})
+        </foreach>
+    </insert>
+</mapper>

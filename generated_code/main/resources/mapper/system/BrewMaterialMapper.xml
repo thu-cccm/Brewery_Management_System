@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewMaterialMapper">
+    
+    <resultMap type="BrewMaterial" id="BrewMaterialResult">
+        <result property="materialId"    column="material_id"    />
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialType"    column="material_type"    />
+        <result property="materialUnit"    column="material_unit"    />
+        <result property="materialSpec"    column="material_spec"    />
+        <result property="unitPrice"    column="unit_price"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="supplierContact"    column="supplier_contact"    />
+        <result property="stockQuantity"    column="stock_quantity"    />
+        <result property="stockWarningValue"    column="stock_warning_value"    />
+        <result property="isWarning"    column="is_warning"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewMaterialVo">
+        select material_id, material_code, material_name, material_type, material_unit, material_spec, unit_price, supplier_name, supplier_contact, stock_quantity, stock_warning_value, is_warning, status, remark, create_by, create_time, update_by, update_time, del_flag from brew_material
+    </sql>
+
+    <select id="selectBrewMaterialList" parameterType="BrewMaterial" resultMap="BrewMaterialResult">
+        <include refid="selectBrewMaterialVo"/>
+        <where>  
+            <if test="materialCode != null  and materialCode != ''"> and material_code = #{materialCode}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="materialType != null  and materialType != ''"> and material_type = #{materialType}</if>
+            <if test="materialUnit != null  and materialUnit != ''"> and material_unit = #{materialUnit}</if>
+            <if test="materialSpec != null  and materialSpec != ''"> and material_spec = #{materialSpec}</if>
+            <if test="unitPrice != null "> and unit_price = #{unitPrice}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="supplierContact != null  and supplierContact != ''"> and supplier_contact = #{supplierContact}</if>
+            <if test="stockQuantity != null "> and stock_quantity = #{stockQuantity}</if>
+            <if test="stockWarningValue != null "> and stock_warning_value = #{stockWarningValue}</if>
+            <if test="isWarning != null  and isWarning != ''"> and is_warning = #{isWarning}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewMaterialByMaterialId" parameterType="Long" resultMap="BrewMaterialResult">
+        <include refid="selectBrewMaterialVo"/>
+        where material_id = #{materialId}
+    </select>
+
+    <insert id="insertBrewMaterial" parameterType="BrewMaterial" useGeneratedKeys="true" keyProperty="materialId">
+        insert into brew_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialCode != null and materialCode != ''">material_code,</if>
+            <if test="materialName != null and materialName != ''">material_name,</if>
+            <if test="materialType != null and materialType != ''">material_type,</if>
+            <if test="materialUnit != null and materialUnit != ''">material_unit,</if>
+            <if test="materialSpec != null">material_spec,</if>
+            <if test="unitPrice != null">unit_price,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="supplierContact != null">supplier_contact,</if>
+            <if test="stockQuantity != null">stock_quantity,</if>
+            <if test="stockWarningValue != null">stock_warning_value,</if>
+            <if test="isWarning != null">is_warning,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialCode != null and materialCode != ''">#{materialCode},</if>
+            <if test="materialName != null and materialName != ''">#{materialName},</if>
+            <if test="materialType != null and materialType != ''">#{materialType},</if>
+            <if test="materialUnit != null and materialUnit != ''">#{materialUnit},</if>
+            <if test="materialSpec != null">#{materialSpec},</if>
+            <if test="unitPrice != null">#{unitPrice},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="supplierContact != null">#{supplierContact},</if>
+            <if test="stockQuantity != null">#{stockQuantity},</if>
+            <if test="stockWarningValue != null">#{stockWarningValue},</if>
+            <if test="isWarning != null">#{isWarning},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewMaterial" parameterType="BrewMaterial">
+        update brew_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialCode != null and materialCode != ''">material_code = #{materialCode},</if>
+            <if test="materialName != null and materialName != ''">material_name = #{materialName},</if>
+            <if test="materialType != null and materialType != ''">material_type = #{materialType},</if>
+            <if test="materialUnit != null and materialUnit != ''">material_unit = #{materialUnit},</if>
+            <if test="materialSpec != null">material_spec = #{materialSpec},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="supplierContact != null">supplier_contact = #{supplierContact},</if>
+            <if test="stockQuantity != null">stock_quantity = #{stockQuantity},</if>
+            <if test="stockWarningValue != null">stock_warning_value = #{stockWarningValue},</if>
+            <if test="isWarning != null">is_warning = #{isWarning},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where material_id = #{materialId}
+    </update>
+
+    <delete id="deleteBrewMaterialByMaterialId" parameterType="Long">
+        delete from brew_material where material_id = #{materialId}
+    </delete>
+
+    <delete id="deleteBrewMaterialByMaterialIds" parameterType="String">
+        delete from brew_material where material_id in 
+        <foreach item="materialId" collection="array" open="(" separator="," close=")">
+            #{materialId}
+        </foreach>
+    </delete>
+</mapper>

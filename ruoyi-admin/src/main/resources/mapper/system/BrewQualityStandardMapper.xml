@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewQualityStandardMapper">
+    
+    <resultMap type="BrewQualityStandard" id="BrewQualityStandardResult">
+        <result property="standardId"    column="standard_id"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="standardName"    column="standard_name"    />
+        <result property="alcoholMin"    column="alcohol_min"    />
+        <result property="alcoholMax"    column="alcohol_max"    />
+        <result property="alcoholTolerance"    column="alcohol_tolerance"    />
+        <result property="colorStandard"    column="color_standard"    />
+        <result property="smellStandard"    column="smell_standard"    />
+        <result property="tasteStandard"    column="taste_standard"    />
+        <result property="otherIndicators"    column="other_indicators"    />
+        <result property="isDefault"    column="is_default"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewQualityStandardVo">
+        select standard_id, category_id, standard_name, alcohol_min, alcohol_max, alcohol_tolerance, color_standard, smell_standard, taste_standard, other_indicators, is_default, status, create_by, create_time, update_by, update_time, del_flag from brew_quality_standard
+    </sql>
+
+    <select id="selectBrewQualityStandardList" parameterType="BrewQualityStandard" resultMap="BrewQualityStandardResult">
+        <include refid="selectBrewQualityStandardVo"/>
+        <where>  
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="standardName != null  and standardName != ''"> and standard_name like concat('%', #{standardName}, '%')</if>
+            <if test="alcoholMin != null "> and alcohol_min = #{alcoholMin}</if>
+            <if test="alcoholMax != null "> and alcohol_max = #{alcoholMax}</if>
+            <if test="alcoholTolerance != null "> and alcohol_tolerance = #{alcoholTolerance}</if>
+            <if test="colorStandard != null  and colorStandard != ''"> and color_standard = #{colorStandard}</if>
+            <if test="smellStandard != null  and smellStandard != ''"> and smell_standard = #{smellStandard}</if>
+            <if test="tasteStandard != null  and tasteStandard != ''"> and taste_standard = #{tasteStandard}</if>
+            <if test="otherIndicators != null  and otherIndicators != ''"> and other_indicators = #{otherIndicators}</if>
+            <if test="isDefault != null  and isDefault != ''"> and is_default = #{isDefault}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewQualityStandardByStandardId" parameterType="Long" resultMap="BrewQualityStandardResult">
+        <include refid="selectBrewQualityStandardVo"/>
+        where standard_id = #{standardId}
+    </select>
+
+    <insert id="insertBrewQualityStandard" parameterType="BrewQualityStandard" useGeneratedKeys="true" keyProperty="standardId">
+        insert into brew_quality_standard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">category_id,</if>
+            <if test="standardName != null and standardName != ''">standard_name,</if>
+            <if test="alcoholMin != null">alcohol_min,</if>
+            <if test="alcoholMax != null">alcohol_max,</if>
+            <if test="alcoholTolerance != null">alcohol_tolerance,</if>
+            <if test="colorStandard != null">color_standard,</if>
+            <if test="smellStandard != null">smell_standard,</if>
+            <if test="tasteStandard != null">taste_standard,</if>
+            <if test="otherIndicators != null">other_indicators,</if>
+            <if test="isDefault != null">is_default,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="standardName != null and standardName != ''">#{standardName},</if>
+            <if test="alcoholMin != null">#{alcoholMin},</if>
+            <if test="alcoholMax != null">#{alcoholMax},</if>
+            <if test="alcoholTolerance != null">#{alcoholTolerance},</if>
+            <if test="colorStandard != null">#{colorStandard},</if>
+            <if test="smellStandard != null">#{smellStandard},</if>
+            <if test="tasteStandard != null">#{tasteStandard},</if>
+            <if test="otherIndicators != null">#{otherIndicators},</if>
+            <if test="isDefault != null">#{isDefault},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewQualityStandard" parameterType="BrewQualityStandard">
+        update brew_quality_standard
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="standardName != null and standardName != ''">standard_name = #{standardName},</if>
+            <if test="alcoholMin != null">alcohol_min = #{alcoholMin},</if>
+            <if test="alcoholMax != null">alcohol_max = #{alcoholMax},</if>
+            <if test="alcoholTolerance != null">alcohol_tolerance = #{alcoholTolerance},</if>
+            <if test="colorStandard != null">color_standard = #{colorStandard},</if>
+            <if test="smellStandard != null">smell_standard = #{smellStandard},</if>
+            <if test="tasteStandard != null">taste_standard = #{tasteStandard},</if>
+            <if test="otherIndicators != null">other_indicators = #{otherIndicators},</if>
+            <if test="isDefault != null">is_default = #{isDefault},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where standard_id = #{standardId}
+    </update>
+
+    <delete id="deleteBrewQualityStandardByStandardId" parameterType="Long">
+        delete from brew_quality_standard where standard_id = #{standardId}
+    </delete>
+
+    <delete id="deleteBrewQualityStandardByStandardIds" parameterType="String">
+        delete from brew_quality_standard where standard_id in 
+        <foreach item="standardId" collection="array" open="(" separator="," close=")">
+            #{standardId}
+        </foreach>
+    </delete>
+</mapper>

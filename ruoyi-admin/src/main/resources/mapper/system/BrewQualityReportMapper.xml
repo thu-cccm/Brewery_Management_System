@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewQualityReportMapper">
+    
+    <resultMap type="BrewQualityReport" id="BrewQualityReportResult">
+        <result property="reportId"    column="report_id"    />
+        <result property="reportNo"    column="report_no"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="reportTitle"    column="report_title"    />
+        <result property="reportContent"    column="report_content"    />
+        <result property="reportStatus"    column="report_status"    />
+        <result property="approveStatus"    column="approve_status"    />
+        <result property="approveBy"    column="approve_by"    />
+        <result property="approveTime"    column="approve_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewQualityReportVo">
+        select report_id, report_no, batch_no, record_id, report_title, report_content, report_status, approve_status, approve_by, approve_time, create_by, create_time, update_by, update_time, del_flag from brew_quality_report
+    </sql>
+
+    <select id="selectBrewQualityReportList" parameterType="BrewQualityReport" resultMap="BrewQualityReportResult">
+        <include refid="selectBrewQualityReportVo"/>
+        <where>  
+            <if test="reportNo != null  and reportNo != ''"> and report_no = #{reportNo}</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="recordId != null "> and record_id = #{recordId}</if>
+            <if test="reportTitle != null  and reportTitle != ''"> and report_title = #{reportTitle}</if>
+            <if test="reportContent != null  and reportContent != ''"> and report_content = #{reportContent}</if>
+            <if test="reportStatus != null  and reportStatus != ''"> and report_status = #{reportStatus}</if>
+            <if test="approveStatus != null  and approveStatus != ''"> and approve_status = #{approveStatus}</if>
+            <if test="approveBy != null  and approveBy != ''"> and approve_by = #{approveBy}</if>
+            <if test="approveTime != null "> and approve_time = #{approveTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewQualityReportByReportId" parameterType="Long" resultMap="BrewQualityReportResult">
+        <include refid="selectBrewQualityReportVo"/>
+        where report_id = #{reportId}
+    </select>
+
+    <insert id="insertBrewQualityReport" parameterType="BrewQualityReport" useGeneratedKeys="true" keyProperty="reportId">
+        insert into brew_quality_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportNo != null and reportNo != ''">report_no,</if>
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="recordId != null">record_id,</if>
+            <if test="reportTitle != null and reportTitle != ''">report_title,</if>
+            <if test="reportContent != null">report_content,</if>
+            <if test="reportStatus != null">report_status,</if>
+            <if test="approveStatus != null">approve_status,</if>
+            <if test="approveBy != null">approve_by,</if>
+            <if test="approveTime != null">approve_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportNo != null and reportNo != ''">#{reportNo},</if>
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="recordId != null">#{recordId},</if>
+            <if test="reportTitle != null and reportTitle != ''">#{reportTitle},</if>
+            <if test="reportContent != null">#{reportContent},</if>
+            <if test="reportStatus != null">#{reportStatus},</if>
+            <if test="approveStatus != null">#{approveStatus},</if>
+            <if test="approveBy != null">#{approveBy},</if>
+            <if test="approveTime != null">#{approveTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewQualityReport" parameterType="BrewQualityReport">
+        update brew_quality_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportNo != null and reportNo != ''">report_no = #{reportNo},</if>
+            <if test="batchNo != null and batchNo != ''">batch_no = #{batchNo},</if>
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="reportTitle != null and reportTitle != ''">report_title = #{reportTitle},</if>
+            <if test="reportContent != null">report_content = #{reportContent},</if>
+            <if test="reportStatus != null">report_status = #{reportStatus},</if>
+            <if test="approveStatus != null">approve_status = #{approveStatus},</if>
+            <if test="approveBy != null">approve_by = #{approveBy},</if>
+            <if test="approveTime != null">approve_time = #{approveTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where report_id = #{reportId}
+    </update>
+
+    <delete id="deleteBrewQualityReportByReportId" parameterType="Long">
+        delete from brew_quality_report where report_id = #{reportId}
+    </delete>
+
+    <delete id="deleteBrewQualityReportByReportIds" parameterType="String">
+        delete from brew_quality_report where report_id in 
+        <foreach item="reportId" collection="array" open="(" separator="," close=")">
+            #{reportId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewWineCategoryMapper">
+    
+    <resultMap type="BrewWineCategory" id="BrewWineCategoryResult">
+        <result property="categoryId"    column="category_id"    />
+        <result property="categoryCode"    column="category_code"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="categoryType"    column="category_type"    />
+        <result property="alcoholRangeMin"    column="alcohol_range_min"    />
+        <result property="alcoholRangeMax"    column="alcohol_range_max"    />
+        <result property="fermentationDaysMin"    column="fermentation_days_min"    />
+        <result property="fermentationDaysMax"    column="fermentation_days_max"    />
+        <result property="optimalTemperature"    column="optimal_temperature"    />
+        <result property="optimalHumidity"    column="optimal_humidity"    />
+        <result property="description"    column="description"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewWineCategoryVo">
+        select category_id, category_code, category_name, category_type, alcohol_range_min, alcohol_range_max, fermentation_days_min, fermentation_days_max, optimal_temperature, optimal_humidity, description, status, create_by, create_time, update_by, update_time, del_flag from brew_wine_category
+    </sql>
+
+    <select id="selectBrewWineCategoryList" parameterType="BrewWineCategory" resultMap="BrewWineCategoryResult">
+        <include refid="selectBrewWineCategoryVo"/>
+        <where>  
+            <if test="categoryCode != null  and categoryCode != ''"> and category_code = #{categoryCode}</if>
+            <if test="categoryName != null  and categoryName != ''"> and category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="categoryType != null  and categoryType != ''"> and category_type = #{categoryType}</if>
+            <if test="alcoholRangeMin != null "> and alcohol_range_min = #{alcoholRangeMin}</if>
+            <if test="alcoholRangeMax != null "> and alcohol_range_max = #{alcoholRangeMax}</if>
+            <if test="fermentationDaysMin != null "> and fermentation_days_min = #{fermentationDaysMin}</if>
+            <if test="fermentationDaysMax != null "> and fermentation_days_max = #{fermentationDaysMax}</if>
+            <if test="optimalTemperature != null "> and optimal_temperature = #{optimalTemperature}</if>
+            <if test="optimalHumidity != null "> and optimal_humidity = #{optimalHumidity}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewWineCategoryByCategoryId" parameterType="Long" resultMap="BrewWineCategoryResult">
+        <include refid="selectBrewWineCategoryVo"/>
+        where category_id = #{categoryId}
+    </select>
+
+    <insert id="insertBrewWineCategory" parameterType="BrewWineCategory" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into brew_wine_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryCode != null and categoryCode != ''">category_code,</if>
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="categoryType != null and categoryType != ''">category_type,</if>
+            <if test="alcoholRangeMin != null">alcohol_range_min,</if>
+            <if test="alcoholRangeMax != null">alcohol_range_max,</if>
+            <if test="fermentationDaysMin != null">fermentation_days_min,</if>
+            <if test="fermentationDaysMax != null">fermentation_days_max,</if>
+            <if test="optimalTemperature != null">optimal_temperature,</if>
+            <if test="optimalHumidity != null">optimal_humidity,</if>
+            <if test="description != null">description,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryCode != null and categoryCode != ''">#{categoryCode},</if>
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="categoryType != null and categoryType != ''">#{categoryType},</if>
+            <if test="alcoholRangeMin != null">#{alcoholRangeMin},</if>
+            <if test="alcoholRangeMax != null">#{alcoholRangeMax},</if>
+            <if test="fermentationDaysMin != null">#{fermentationDaysMin},</if>
+            <if test="fermentationDaysMax != null">#{fermentationDaysMax},</if>
+            <if test="optimalTemperature != null">#{optimalTemperature},</if>
+            <if test="optimalHumidity != null">#{optimalHumidity},</if>
+            <if test="description != null">#{description},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewWineCategory" parameterType="BrewWineCategory">
+        update brew_wine_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryCode != null and categoryCode != ''">category_code = #{categoryCode},</if>
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="categoryType != null and categoryType != ''">category_type = #{categoryType},</if>
+            <if test="alcoholRangeMin != null">alcohol_range_min = #{alcoholRangeMin},</if>
+            <if test="alcoholRangeMax != null">alcohol_range_max = #{alcoholRangeMax},</if>
+            <if test="fermentationDaysMin != null">fermentation_days_min = #{fermentationDaysMin},</if>
+            <if test="fermentationDaysMax != null">fermentation_days_max = #{fermentationDaysMax},</if>
+            <if test="optimalTemperature != null">optimal_temperature = #{optimalTemperature},</if>
+            <if test="optimalHumidity != null">optimal_humidity = #{optimalHumidity},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where category_id = #{categoryId}
+    </update>
+
+    <delete id="deleteBrewWineCategoryByCategoryId" parameterType="Long">
+        delete from brew_wine_category where category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteBrewWineCategoryByCategoryIds" parameterType="String">
+        delete from brew_wine_category where category_id in 
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </delete>
+</mapper>

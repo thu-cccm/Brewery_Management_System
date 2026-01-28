@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewQualityRecordMapper">
+    
+    <resultMap type="BrewQualityRecord" id="BrewQualityRecordResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="standardId"    column="standard_id"    />
+        <result property="inspectTime"    column="inspect_time"    />
+        <result property="inspectorName"    column="inspector_name"    />
+        <result property="alcoholBefore"    column="alcohol_before"    />
+        <result property="alcoholAfter"    column="alcohol_after"    />
+        <result property="alcoholActual"    column="alcohol_actual"    />
+        <result property="alcoholError"    column="alcohol_error"    />
+        <result property="wineOutputRate"    column="wine_output_rate"    />
+        <result property="colorResult"    column="color_result"    />
+        <result property="smellResult"    column="smell_result"    />
+        <result property="tasteResult"    column="taste_result"    />
+        <result property="qualityResult"    column="quality_result"    />
+        <result property="qualityScore"    column="quality_score"    />
+        <result property="unqualifiedReason"    column="unqualified_reason"    />
+        <result property="handleSuggestion"    column="handle_suggestion"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewQualityRecordVo">
+        select record_id, batch_no, standard_id, inspect_time, inspector_name, alcohol_before, alcohol_after, alcohol_actual, alcohol_error, wine_output_rate, color_result, smell_result, taste_result, quality_result, quality_score, unqualified_reason, handle_suggestion, remark, create_by, create_time, update_by, update_time, del_flag from brew_quality_record
+    </sql>
+
+    <select id="selectBrewQualityRecordList" parameterType="BrewQualityRecord" resultMap="BrewQualityRecordResult">
+        <include refid="selectBrewQualityRecordVo"/>
+        <where>  
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="standardId != null "> and standard_id = #{standardId}</if>
+            <if test="inspectTime != null "> and inspect_time = #{inspectTime}</if>
+            <if test="inspectorName != null  and inspectorName != ''"> and inspector_name like concat('%', #{inspectorName}, '%')</if>
+            <if test="alcoholBefore != null "> and alcohol_before = #{alcoholBefore}</if>
+            <if test="alcoholAfter != null "> and alcohol_after = #{alcoholAfter}</if>
+            <if test="alcoholActual != null "> and alcohol_actual = #{alcoholActual}</if>
+            <if test="alcoholError != null "> and alcohol_error = #{alcoholError}</if>
+            <if test="wineOutputRate != null "> and wine_output_rate = #{wineOutputRate}</if>
+            <if test="colorResult != null  and colorResult != ''"> and color_result = #{colorResult}</if>
+            <if test="smellResult != null  and smellResult != ''"> and smell_result = #{smellResult}</if>
+            <if test="tasteResult != null  and tasteResult != ''"> and taste_result = #{tasteResult}</if>
+            <if test="qualityResult != null  and qualityResult != ''"> and quality_result = #{qualityResult}</if>
+            <if test="qualityScore != null "> and quality_score = #{qualityScore}</if>
+            <if test="unqualifiedReason != null  and unqualifiedReason != ''"> and unqualified_reason = #{unqualifiedReason}</if>
+            <if test="handleSuggestion != null  and handleSuggestion != ''"> and handle_suggestion = #{handleSuggestion}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewQualityRecordByRecordId" parameterType="Long" resultMap="BrewQualityRecordResult">
+        <include refid="selectBrewQualityRecordVo"/>
+        where record_id = #{recordId}
+    </select>
+
+    <insert id="insertBrewQualityRecord" parameterType="BrewQualityRecord" useGeneratedKeys="true" keyProperty="recordId">
+        insert into brew_quality_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="standardId != null">standard_id,</if>
+            <if test="inspectTime != null">inspect_time,</if>
+            <if test="inspectorName != null and inspectorName != ''">inspector_name,</if>
+            <if test="alcoholBefore != null">alcohol_before,</if>
+            <if test="alcoholAfter != null">alcohol_after,</if>
+            <if test="alcoholActual != null">alcohol_actual,</if>
+            <if test="alcoholError != null">alcohol_error,</if>
+            <if test="wineOutputRate != null">wine_output_rate,</if>
+            <if test="colorResult != null">color_result,</if>
+            <if test="smellResult != null">smell_result,</if>
+            <if test="tasteResult != null">taste_result,</if>
+            <if test="qualityResult != null and qualityResult != ''">quality_result,</if>
+            <if test="qualityScore != null">quality_score,</if>
+            <if test="unqualifiedReason != null">unqualified_reason,</if>
+            <if test="handleSuggestion != null">handle_suggestion,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="standardId != null">#{standardId},</if>
+            <if test="inspectTime != null">#{inspectTime},</if>
+            <if test="inspectorName != null and inspectorName != ''">#{inspectorName},</if>
+            <if test="alcoholBefore != null">#{alcoholBefore},</if>
+            <if test="alcoholAfter != null">#{alcoholAfter},</if>
+            <if test="alcoholActual != null">#{alcoholActual},</if>
+            <if test="alcoholError != null">#{alcoholError},</if>
+            <if test="wineOutputRate != null">#{wineOutputRate},</if>
+            <if test="colorResult != null">#{colorResult},</if>
+            <if test="smellResult != null">#{smellResult},</if>
+            <if test="tasteResult != null">#{tasteResult},</if>
+            <if test="qualityResult != null and qualityResult != ''">#{qualityResult},</if>
+            <if test="qualityScore != null">#{qualityScore},</if>
+            <if test="unqualifiedReason != null">#{unqualifiedReason},</if>
+            <if test="handleSuggestion != null">#{handleSuggestion},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewQualityRecord" parameterType="BrewQualityRecord">
+        update brew_quality_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no = #{batchNo},</if>
+            <if test="standardId != null">standard_id = #{standardId},</if>
+            <if test="inspectTime != null">inspect_time = #{inspectTime},</if>
+            <if test="inspectorName != null and inspectorName != ''">inspector_name = #{inspectorName},</if>
+            <if test="alcoholBefore != null">alcohol_before = #{alcoholBefore},</if>
+            <if test="alcoholAfter != null">alcohol_after = #{alcoholAfter},</if>
+            <if test="alcoholActual != null">alcohol_actual = #{alcoholActual},</if>
+            <if test="alcoholError != null">alcohol_error = #{alcoholError},</if>
+            <if test="wineOutputRate != null">wine_output_rate = #{wineOutputRate},</if>
+            <if test="colorResult != null">color_result = #{colorResult},</if>
+            <if test="smellResult != null">smell_result = #{smellResult},</if>
+            <if test="tasteResult != null">taste_result = #{tasteResult},</if>
+            <if test="qualityResult != null and qualityResult != ''">quality_result = #{qualityResult},</if>
+            <if test="qualityScore != null">quality_score = #{qualityScore},</if>
+            <if test="unqualifiedReason != null">unqualified_reason = #{unqualifiedReason},</if>
+            <if test="handleSuggestion != null">handle_suggestion = #{handleSuggestion},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deleteBrewQualityRecordByRecordId" parameterType="Long">
+        delete from brew_quality_record where record_id = #{recordId}
+    </delete>
+
+    <delete id="deleteBrewQualityRecordByRecordIds" parameterType="String">
+        delete from brew_quality_record where record_id in 
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+</mapper>

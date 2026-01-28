@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewFormulaDetailMapper">
+    
+    <resultMap type="BrewFormulaDetail" id="BrewFormulaDetailResult">
+        <result property="detailId"    column="detail_id"    />
+        <result property="templateId"    column="template_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialRatio"    column="material_ratio"    />
+        <result property="baseQuantity"    column="base_quantity"    />
+        <result property="isMainMaterial"    column="is_main_material"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewFormulaDetailVo">
+        select detail_id, template_id, material_id, material_ratio, base_quantity, is_main_material, sort_order, remark, create_by, create_time, update_by, update_time, del_flag from brew_formula_detail
+    </sql>
+
+    <select id="selectBrewFormulaDetailList" parameterType="BrewFormulaDetail" resultMap="BrewFormulaDetailResult">
+        <include refid="selectBrewFormulaDetailVo"/>
+        <where>  
+            <if test="templateId != null "> and template_id = #{templateId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="materialRatio != null "> and material_ratio = #{materialRatio}</if>
+            <if test="baseQuantity != null "> and base_quantity = #{baseQuantity}</if>
+            <if test="isMainMaterial != null  and isMainMaterial != ''"> and is_main_material = #{isMainMaterial}</if>
+            <if test="sortOrder != null "> and sort_order = #{sortOrder}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewFormulaDetailByDetailId" parameterType="Long" resultMap="BrewFormulaDetailResult">
+        <include refid="selectBrewFormulaDetailVo"/>
+        where detail_id = #{detailId}
+    </select>
+
+    <insert id="insertBrewFormulaDetail" parameterType="BrewFormulaDetail" useGeneratedKeys="true" keyProperty="detailId">
+        insert into brew_formula_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">template_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialRatio != null">material_ratio,</if>
+            <if test="baseQuantity != null">base_quantity,</if>
+            <if test="isMainMaterial != null">is_main_material,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">#{templateId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialRatio != null">#{materialRatio},</if>
+            <if test="baseQuantity != null">#{baseQuantity},</if>
+            <if test="isMainMaterial != null">#{isMainMaterial},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewFormulaDetail" parameterType="BrewFormulaDetail">
+        update brew_formula_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialRatio != null">material_ratio = #{materialRatio},</if>
+            <if test="baseQuantity != null">base_quantity = #{baseQuantity},</if>
+            <if test="isMainMaterial != null">is_main_material = #{isMainMaterial},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where detail_id = #{detailId}
+    </update>
+
+    <delete id="deleteBrewFormulaDetailByDetailId" parameterType="Long">
+        delete from brew_formula_detail where detail_id = #{detailId}
+    </delete>
+
+    <delete id="deleteBrewFormulaDetailByDetailIds" parameterType="String">
+        delete from brew_formula_detail where detail_id in 
+        <foreach item="detailId" collection="array" open="(" separator="," close=")">
+            #{detailId}
+        </foreach>
+    </delete>
+</mapper>

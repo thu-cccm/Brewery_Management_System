@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewProductionProcessMapper">
+    
+    <resultMap type="BrewProductionProcess" id="BrewProductionProcessResult">
+        <result property="processId"    column="process_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="processStage"    column="process_stage"    />
+        <result property="processTime"    column="process_time"    />
+        <result property="avgTemperature"    column="avg_temperature"    />
+        <result property="avgHumidity"    column="avg_humidity"    />
+        <result property="processData"    column="process_data"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewProductionProcessVo">
+        select process_id, batch_no, process_stage, process_time, avg_temperature, avg_humidity, process_data, operator_name, remark, create_by, create_time, update_by, update_time, del_flag from brew_production_process
+    </sql>
+
+    <select id="selectBrewProductionProcessList" parameterType="BrewProductionProcess" resultMap="BrewProductionProcessResult">
+        <include refid="selectBrewProductionProcessVo"/>
+        <where>  
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="processStage != null  and processStage != ''"> and process_stage = #{processStage}</if>
+            <if test="processTime != null "> and process_time = #{processTime}</if>
+            <if test="avgTemperature != null "> and avg_temperature = #{avgTemperature}</if>
+            <if test="avgHumidity != null "> and avg_humidity = #{avgHumidity}</if>
+            <if test="processData != null  and processData != ''"> and process_data = #{processData}</if>
+            <if test="operatorName != null  and operatorName != ''"> and operator_name like concat('%', #{operatorName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewProductionProcessByProcessId" parameterType="Long" resultMap="BrewProductionProcessResult">
+        <include refid="selectBrewProductionProcessVo"/>
+        where process_id = #{processId}
+    </select>
+
+    <insert id="insertBrewProductionProcess" parameterType="BrewProductionProcess" useGeneratedKeys="true" keyProperty="processId">
+        insert into brew_production_process
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="processStage != null and processStage != ''">process_stage,</if>
+            <if test="processTime != null">process_time,</if>
+            <if test="avgTemperature != null">avg_temperature,</if>
+            <if test="avgHumidity != null">avg_humidity,</if>
+            <if test="processData != null">process_data,</if>
+            <if test="operatorName != null">operator_name,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="processStage != null and processStage != ''">#{processStage},</if>
+            <if test="processTime != null">#{processTime},</if>
+            <if test="avgTemperature != null">#{avgTemperature},</if>
+            <if test="avgHumidity != null">#{avgHumidity},</if>
+            <if test="processData != null">#{processData},</if>
+            <if test="operatorName != null">#{operatorName},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewProductionProcess" parameterType="BrewProductionProcess">
+        update brew_production_process
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no = #{batchNo},</if>
+            <if test="processStage != null and processStage != ''">process_stage = #{processStage},</if>
+            <if test="processTime != null">process_time = #{processTime},</if>
+            <if test="avgTemperature != null">avg_temperature = #{avgTemperature},</if>
+            <if test="avgHumidity != null">avg_humidity = #{avgHumidity},</if>
+            <if test="processData != null">process_data = #{processData},</if>
+            <if test="operatorName != null">operator_name = #{operatorName},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where process_id = #{processId}
+    </update>
+
+    <delete id="deleteBrewProductionProcessByProcessId" parameterType="Long">
+        delete from brew_production_process where process_id = #{processId}
+    </delete>
+
+    <delete id="deleteBrewProductionProcessByProcessIds" parameterType="String">
+        delete from brew_production_process where process_id in 
+        <foreach item="processId" collection="array" open="(" separator="," close=")">
+            #{processId}
+        </foreach>
+    </delete>
+</mapper>

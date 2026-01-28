@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewCostStatisticsMapper">
+    
+    <resultMap type="BrewCostStatistics" id="BrewCostStatisticsResult">
+        <result property="statId"    column="stat_id"    />
+        <result property="statPeriod"    column="stat_period"    />
+        <result property="statType"    column="stat_type"    />
+        <result property="totalOutput"    column="total_output"    />
+        <result property="totalCost"    column="total_cost"    />
+        <result property="materialCost"    column="material_cost"    />
+        <result property="energyCost"    column="energy_cost"    />
+        <result property="laborCost"    column="labor_cost"    />
+        <result property="otherCost"    column="other_cost"    />
+        <result property="unitCost"    column="unit_cost"    />
+        <result property="costTrend"    column="cost_trend"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewCostStatisticsVo">
+        select stat_id, stat_period, stat_type, total_output, total_cost, material_cost, energy_cost, labor_cost, other_cost, unit_cost, cost_trend, create_by, create_time, update_by, update_time, del_flag from brew_cost_statistics
+    </sql>
+
+    <select id="selectBrewCostStatisticsList" parameterType="BrewCostStatistics" resultMap="BrewCostStatisticsResult">
+        <include refid="selectBrewCostStatisticsVo"/>
+        <where>  
+            <if test="statPeriod != null  and statPeriod != ''"> and stat_period = #{statPeriod}</if>
+            <if test="statType != null  and statType != ''"> and stat_type = #{statType}</if>
+            <if test="totalOutput != null "> and total_output = #{totalOutput}</if>
+            <if test="totalCost != null "> and total_cost = #{totalCost}</if>
+            <if test="materialCost != null "> and material_cost = #{materialCost}</if>
+            <if test="energyCost != null "> and energy_cost = #{energyCost}</if>
+            <if test="laborCost != null "> and labor_cost = #{laborCost}</if>
+            <if test="otherCost != null "> and other_cost = #{otherCost}</if>
+            <if test="unitCost != null "> and unit_cost = #{unitCost}</if>
+            <if test="costTrend != null  and costTrend != ''"> and cost_trend = #{costTrend}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewCostStatisticsByStatId" parameterType="Long" resultMap="BrewCostStatisticsResult">
+        <include refid="selectBrewCostStatisticsVo"/>
+        where stat_id = #{statId}
+    </select>
+
+    <insert id="insertBrewCostStatistics" parameterType="BrewCostStatistics" useGeneratedKeys="true" keyProperty="statId">
+        insert into brew_cost_statistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="statPeriod != null and statPeriod != ''">stat_period,</if>
+            <if test="statType != null and statType != ''">stat_type,</if>
+            <if test="totalOutput != null">total_output,</if>
+            <if test="totalCost != null">total_cost,</if>
+            <if test="materialCost != null">material_cost,</if>
+            <if test="energyCost != null">energy_cost,</if>
+            <if test="laborCost != null">labor_cost,</if>
+            <if test="otherCost != null">other_cost,</if>
+            <if test="unitCost != null">unit_cost,</if>
+            <if test="costTrend != null">cost_trend,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="statPeriod != null and statPeriod != ''">#{statPeriod},</if>
+            <if test="statType != null and statType != ''">#{statType},</if>
+            <if test="totalOutput != null">#{totalOutput},</if>
+            <if test="totalCost != null">#{totalCost},</if>
+            <if test="materialCost != null">#{materialCost},</if>
+            <if test="energyCost != null">#{energyCost},</if>
+            <if test="laborCost != null">#{laborCost},</if>
+            <if test="otherCost != null">#{otherCost},</if>
+            <if test="unitCost != null">#{unitCost},</if>
+            <if test="costTrend != null">#{costTrend},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewCostStatistics" parameterType="BrewCostStatistics">
+        update brew_cost_statistics
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="statPeriod != null and statPeriod != ''">stat_period = #{statPeriod},</if>
+            <if test="statType != null and statType != ''">stat_type = #{statType},</if>
+            <if test="totalOutput != null">total_output = #{totalOutput},</if>
+            <if test="totalCost != null">total_cost = #{totalCost},</if>
+            <if test="materialCost != null">material_cost = #{materialCost},</if>
+            <if test="energyCost != null">energy_cost = #{energyCost},</if>
+            <if test="laborCost != null">labor_cost = #{laborCost},</if>
+            <if test="otherCost != null">other_cost = #{otherCost},</if>
+            <if test="unitCost != null">unit_cost = #{unitCost},</if>
+            <if test="costTrend != null">cost_trend = #{costTrend},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where stat_id = #{statId}
+    </update>
+
+    <delete id="deleteBrewCostStatisticsByStatId" parameterType="Long">
+        delete from brew_cost_statistics where stat_id = #{statId}
+    </delete>
+
+    <delete id="deleteBrewCostStatisticsByStatIds" parameterType="String">
+        delete from brew_cost_statistics where stat_id in 
+        <foreach item="statId" collection="array" open="(" separator="," close=")">
+            #{statId}
+        </foreach>
+    </delete>
+</mapper>

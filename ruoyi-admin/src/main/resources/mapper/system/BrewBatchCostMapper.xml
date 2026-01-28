@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewBatchCostMapper">
+    
+    <resultMap type="BrewBatchCost" id="BrewBatchCostResult">
+        <result property="costId"    column="cost_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="costItemId"    column="cost_item_id"    />
+        <result property="actualCost"    column="actual_cost"    />
+        <result property="costQuantity"    column="cost_quantity"    />
+        <result property="calculationDetail"    column="calculation_detail"    />
+        <result property="recordTime"    column="record_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewBatchCostVo">
+        select cost_id, batch_no, cost_item_id, actual_cost, cost_quantity, calculation_detail, record_time, create_by, create_time, update_by, update_time, del_flag from brew_batch_cost
+    </sql>
+
+    <select id="selectBrewBatchCostList" parameterType="BrewBatchCost" resultMap="BrewBatchCostResult">
+        <include refid="selectBrewBatchCostVo"/>
+        <where>  
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="costItemId != null "> and cost_item_id = #{costItemId}</if>
+            <if test="actualCost != null "> and actual_cost = #{actualCost}</if>
+            <if test="costQuantity != null "> and cost_quantity = #{costQuantity}</if>
+            <if test="calculationDetail != null  and calculationDetail != ''"> and calculation_detail = #{calculationDetail}</if>
+            <if test="recordTime != null "> and record_time = #{recordTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewBatchCostByCostId" parameterType="Long" resultMap="BrewBatchCostResult">
+        <include refid="selectBrewBatchCostVo"/>
+        where cost_id = #{costId}
+    </select>
+
+    <insert id="insertBrewBatchCost" parameterType="BrewBatchCost" useGeneratedKeys="true" keyProperty="costId">
+        insert into brew_batch_cost
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="costItemId != null">cost_item_id,</if>
+            <if test="actualCost != null">actual_cost,</if>
+            <if test="costQuantity != null">cost_quantity,</if>
+            <if test="calculationDetail != null">calculation_detail,</if>
+            <if test="recordTime != null">record_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="costItemId != null">#{costItemId},</if>
+            <if test="actualCost != null">#{actualCost},</if>
+            <if test="costQuantity != null">#{costQuantity},</if>
+            <if test="calculationDetail != null">#{calculationDetail},</if>
+            <if test="recordTime != null">#{recordTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewBatchCost" parameterType="BrewBatchCost">
+        update brew_batch_cost
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchNo != null and batchNo != ''">batch_no = #{batchNo},</if>
+            <if test="costItemId != null">cost_item_id = #{costItemId},</if>
+            <if test="actualCost != null">actual_cost = #{actualCost},</if>
+            <if test="costQuantity != null">cost_quantity = #{costQuantity},</if>
+            <if test="calculationDetail != null">calculation_detail = #{calculationDetail},</if>
+            <if test="recordTime != null">record_time = #{recordTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where cost_id = #{costId}
+    </update>
+
+    <delete id="deleteBrewBatchCostByCostId" parameterType="Long">
+        delete from brew_batch_cost where cost_id = #{costId}
+    </delete>
+
+    <delete id="deleteBrewBatchCostByCostIds" parameterType="String">
+        delete from brew_batch_cost where cost_id in 
+        <foreach item="costId" collection="array" open="(" separator="," close=")">
+            #{costId}
+        </foreach>
+    </delete>
+</mapper>
