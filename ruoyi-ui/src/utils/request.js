@@ -5,7 +5,9 @@ import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
 import { tansParams, blobValidate } from "@/utils/ruoyi"
 import cache from '@/plugins/cache'
-import { saveAs } from 'file-saver'
+import { 
+  saveAs 
+  } from 'file-saver'
 
 let downloadLoadingInstance
 // 是否显示重新登录

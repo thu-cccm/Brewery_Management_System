@@ -15,6 +15,10 @@ const isWhiteList = (path) => {
   return whiteList.some(pattern => isPathMatch(pattern, path))
 }
 
+// 路由缓存，避免重复加载
+let hasRoutes = false
+let routeLoading = false
+
 router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) {
@@ -26,7 +30,9 @@ router.beforeEach((to, from, next) => {
     } else if (isWhiteList(to.path)) {
       next()
     } else {
-      if (store.getters.roles.length === 0) {
+      // 优化：只在首次加载或roles为空时加载路由，避免每次跳转都检查
+      if (store.getters.roles.length === 0 && !hasRoutes && !routeLoading) {
+        routeLoading = true
         isRelogin.show = true
         // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetInfo').then(() => {
@@ -34,15 +40,21 @@ router.beforeEach((to, from, next) => {
           store.dispatch('GenerateRoutes').then(accessRoutes => {
             // 根据roles权限生成可访问的路由表
             router.addRoutes(accessRoutes) // 动态添加可访问路由表
+            hasRoutes = true
+            routeLoading = false
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+          }).catch(() => {
+            routeLoading = false
           })
         }).catch(err => {
+            routeLoading = false
             store.dispatch('LogOut').then(() => {
               Message.error(err)
               next({ path: '/' })
             })
           })
       } else {
+        // 路由已加载，直接跳转
         next()
       }
     }

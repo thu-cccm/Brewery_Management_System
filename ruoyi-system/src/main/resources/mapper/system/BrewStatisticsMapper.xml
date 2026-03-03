@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewStatisticsMapper">
+
+    <select id="selectCostTrendByMonths" resultType="java.util.Map">
+        SELECT 
+            DATE_FORMAT(create_time, '%Y-%m') as month,
+            COALESCE(SUM(total_cost), 0) as totalCost,
+            COALESCE(AVG(unit_cost), 0) as unitCost
+        FROM brew_cost_statistics 
+        WHERE del_flag = '0' 
+          AND create_time >= DATE_SUB(CURDATE(), INTERVAL #{months} MONTH)
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+        ORDER BY month ASC
+    </select>
+
+    <select id="selectMaterialWarningList" resultType="java.util.Map">
+        SELECT 
+            material_id as materialId,
+            material_code as materialCode,
+            material_name as materialName,
+            material_type as materialType,
+            material_unit as materialUnit,
+            stock_quantity as stockQuantity,
+            stock_warning_value as warningThreshold,
+            (stock_warning_value - stock_quantity) as shortage
+        FROM brew_material 
+        WHERE del_flag = '0' 
+          AND status = '0'
+          AND stock_quantity &lt; stock_warning_value
+        ORDER BY (stock_warning_value - stock_quantity) DESC
+    </select>
+
+    <select id="selectProductionCompareByMonths" resultType="java.util.Map">
+        SELECT 
+            months.month,
+            COALESCE(plan_data.planOutput, 0) as planOutput,
+            COALESCE(actual_data.actualOutput, 0) as actualOutput
+        FROM (
+            SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n MONTH), '%Y-%m') as month
+            FROM (
+                SELECT 0 as n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5
+            ) numbers
+            WHERE n &lt; #{months}
+        ) months
+        LEFT JOIN (
+            SELECT 
+                DATE_FORMAT(plan_start_date, '%Y-%m') as month,
+                SUM(target_output) as planOutput
+            FROM brew_production_plan 
+            WHERE del_flag = '0'
+            GROUP BY DATE_FORMAT(plan_start_date, '%Y-%m')
+        ) plan_data ON months.month = plan_data.month
+        LEFT JOIN (
+            SELECT 
+                DATE_FORMAT(production_date, '%Y-%m') as month,
+                SUM(actual_output) as actualOutput
+            FROM brew_production_batch 
+            WHERE del_flag = '0'
+            GROUP BY DATE_FORMAT(production_date, '%Y-%m')
+        ) actual_data ON months.month = actual_data.month
+        ORDER BY months.month ASC
+    </select>
+
+    <select id="selectDashboardSummary" resultType="java.util.Map">
+        SELECT 
+            (SELECT COUNT(*) FROM brew_production_plan WHERE del_flag = '0' AND plan_status = '3') as activePlans,
+            (SELECT COUNT(*) FROM brew_production_batch WHERE del_flag = '0' AND batch_status IN ('1', '2', '3', '4')) as activeBatches,
+            (SELECT COUNT(*) FROM brew_material WHERE del_flag = '0' AND status = '0' AND stock_quantity &lt; stock_warning_value) as warningMaterials,
+            (SELECT COUNT(*) FROM brew_quality_record WHERE del_flag = '0' AND quality_result = '2') as failedQuality,
+            (SELECT COALESCE(SUM(actual_output), 0) FROM brew_production_batch WHERE del_flag = '0' AND MONTH(production_date) = MONTH(CURDATE())) as monthlyOutput,
+            (SELECT COALESCE(SUM(total_cost), 0) FROM brew_cost_statistics WHERE del_flag = '0' AND stat_period = DATE_FORMAT(CURDATE(), '%Y%m')) as monthlyCost
+    </select>
+
+    <update id="updateMaterialStock">
+        UPDATE brew_material 
+        SET stock_quantity = stock_quantity - #{quantity},
+            update_time = NOW(),
+            is_warning = CASE WHEN (stock_quantity - #{quantity}) &lt; stock_warning_value THEN '1' ELSE '0' END
+        WHERE material_id = #{materialId} 
+          AND stock_quantity >= #{quantity}
+          AND del_flag = '0'
+    </update>
+
+    <select id="selectNextBatchSequence" resultType="String">
+        SELECT LPAD(COALESCE(MAX(CAST(SUBSTRING(batch_no, 11) AS UNSIGNED)), 0) + 1, 6, '0')
+        FROM brew_production_batch
+        WHERE batch_no LIKE CONCAT(#{datePrefix}, '%')
+    </select>
+
+    <select id="selectQualityStability" resultType="java.util.Map">
+        SELECT 
+            batch_no,
+            COALESCE(alcohol_error, 0) as alcohol_error,
+            COALESCE(quality_score, 0) as quality_score
+        FROM brew_quality_record
+        WHERE del_flag = '0'
+        <if test="categoryCode != null and categoryCode != ''">
+            AND batch_no LIKE CONCAT(#{categoryCode}, '%')
+        </if>
+        ORDER BY create_time DESC
+        LIMIT 15
+    </select>
+
+    <select id="selectProductionEfficiency" resultType="java.util.Map">
+        SELECT 
+            b.batch_no,
+            c.category_name,
+            COALESCE(q.wine_output_rate, 0) as outputRate,
+            CASE 
+                WHEN q.wine_output_rate >= 50 THEN '高效'
+                WHEN q.wine_output_rate >= 40 THEN '正常'
+                ELSE '低效'
+            END as efficiencyLevel
+        FROM brew_production_batch b
+        LEFT JOIN brew_wine_category c ON b.category_id = c.category_id
+        LEFT JOIN brew_quality_record q ON b.batch_no = q.batch_no
+        WHERE b.del_flag = '0' AND q.wine_output_rate IS NOT NULL
+        ORDER BY b.create_time DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectProductionProgress" resultType="java.util.Map">
+        SELECT 
+            batch_no,
+            batch_status,
+            fermentation_start,
+            fermentation_end,
+            DATEDIFF(fermentation_end, fermentation_start) as total_days,
+            DATEDIFF(CURDATE(), fermentation_start) as passed_days,
+            CASE 
+                WHEN batch_status = '5' THEN 100
+                WHEN fermentation_end &lt; CURDATE() AND batch_status &lt; '5' THEN 99
+                ELSE ROUND(GREATEST(0, LEAST(100, (DATEDIFF(CURDATE(), fermentation_start) / DATEDIFF(fermentation_end, fermentation_start)) * 100)))
+            END as progress
+        FROM brew_production_batch
+        WHERE del_flag = '0' AND batch_status &lt; '5'
+        ORDER BY progress DESC
+        LIMIT 5
+    </select>
+</mapper>

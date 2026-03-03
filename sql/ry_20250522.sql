@@ -20,9 +20,7 @@ create table sys_dept (
   primary key (dept_id)
 ) engine=innodb auto_increment=200 comment = '部门表';
 
--- ----------------------------
--- 初始化-部门表数据
--- ----------------------------
+
 insert into sys_dept values(100,  0,   '0',          '若依科技',   0, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
 insert into sys_dept values(101,  100, '0,100',      '深圳总公司', 1, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
 insert into sys_dept values(102,  100, '0,100',      '长沙分公司', 2, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
@@ -35,9 +33,7 @@ insert into sys_dept values(108,  102, '0,100,102',  '市场部门',   1, '若�
 insert into sys_dept values(109,  102, '0,100,102',  '财务部门',   2, '若依', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
 
 
--- ----------------------------
--- 2、用户信息表
--- ----------------------------
+
 drop table if exists sys_user;
 create table sys_user (
   user_id           bigint(20)      not null auto_increment    comment '用户ID',

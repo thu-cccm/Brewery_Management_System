@@ -22,6 +22,14 @@
       </el-form-item>
     </el-form>
 
+    <!-- 可视化图表区域 -->
+    <el-card class="box-card mb8" shadow="hover" v-if="planList.length > 0">
+      <div slot="header" class="clearfix">
+        <span><i class="el-icon-s-data"></i> 生产排期甘特图</span>
+      </div>
+      <div id="ganttChart" style="height: 300px; width: 100%;"></div>
+    </el-card>
+
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['system:plan:add']">新增</el-button>
@@ -194,11 +202,13 @@
 <script>
 import { listPlan, getPlan, delPlan, addPlan, updatePlan } from "@/api/system/plan"
 import { calculateMaterial, startProduction } from "@/api/brew/calculation"
+import * as echarts from 'echarts'
 
 export default {
   name: "Plan",
   data() {
     return {
+      chart: null,
       loading: true,
       ids: [],
       single: true,
@@ -249,7 +259,133 @@ export default {
         this.planList = response.rows
         this.total = response.total
         this.loading = false
+        this.$nextTick(() => {
+          this.initChart()
+        })
       })
+    },
+    initChart() {
+      if (!this.planList || this.planList.length === 0) return;
+      
+      if (this.chart) {
+        this.chart.dispose();
+      }
+      
+      const chartDom = document.getElementById('ganttChart');
+      if (!chartDom) return;
+      
+      this.chart = echarts.init(chartDom);
+      
+      const yAxisData = [];
+      const seriesData = [];
+      const today = new Date();
+      
+      this.planList.forEach(plan => {
+        yAxisData.push(plan.planName);
+        const startTime = new Date(plan.planStartDate).getTime();
+        const endTime = new Date(plan.planEndDate).getTime();
+        
+        let color = '#909399'; // default info
+        if (plan.planStatus === '3') color = '#409EFF'; // 生产中 primary
+        else if (plan.planStatus === '4') color = '#67C23A'; // 已完成 success
+        else if (plan.planStatus === '2') color = '#E6A23C'; // 已审核 warning
+        else if (plan.planStatus === '5') color = '#F56C6C'; // 已取消 danger
+        
+        seriesData.push({
+          name: plan.planName,
+          value: [
+            0,
+            startTime,
+            endTime,
+            endTime - startTime
+          ],
+          itemStyle: {
+            normal: {
+              color: color
+            }
+          }
+        });
+      });
+      
+      const option = {
+        tooltip: {
+          formatter: function (params) {
+            const startDate = new Date(params.value[1]).toLocaleDateString();
+            const endDate = new Date(params.value[2]).toLocaleDateString();
+            return params.name + ': ' + startDate + ' ~ ' + endDate;
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'time',
+          axisLabel: {
+            formatter: function (val) {
+              return new Date(val).toLocaleDateString();
+            }
+          }
+        },
+        yAxis: {
+          data: yAxisData
+        },
+        series: [
+          {
+            type: 'custom',
+            renderItem: function (params, api) {
+              const categoryIndex = api.value(0);
+              const start = api.coord([api.value(1), categoryIndex]);
+              const end = api.coord([api.value(2), categoryIndex]);
+              const height = api.size([0, 1])[1] * 0.6;
+              
+              const rectShape = echarts.graphic.clipRectByRect({
+                x: start[0],
+                y: start[1] - height / 2,
+                width: end[0] - start[0],
+                height: height
+              }, {
+                x: params.coordSys.x,
+                y: params.coordSys.y,
+                width: params.coordSys.width,
+                height: params.coordSys.height
+              });
+              
+              return rectShape && {
+                type: 'rect',
+                transition: ['shape'],
+                shape: rectShape,
+                style: api.style()
+              };
+            },
+            itemStyle: {
+              opacity: 0.8
+            },
+            encode: {
+              x: [1, 2],
+              y: 0
+            },
+            data: seriesData
+          }
+        ]
+      };
+      
+      this.chart.setOption(option);
+      
+      // Resize listener
+      window.addEventListener("resize", () => {
+        this.chart.resize();
+      });
+      
+      // Click event for interaction
+      this.chart.on('click', (params) => {
+        const clickedName = params.name;
+        // Find row in table and highlight or scroll to it if needed
+        // For now, we can filter or just message
+        this.$message.info(`已选中计划: ${clickedName}`);
+      });
     },
     getStatusType(status) {
       const types = { '1': 'info', '2': 'warning', '3': 'primary', '4': 'success', '5': 'danger' }

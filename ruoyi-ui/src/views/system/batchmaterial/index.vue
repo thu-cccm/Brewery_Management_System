@@ -17,34 +17,34 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="原料批次编号（供应商操作供，?手工录入）" prop="materialBatchNo">
+      <el-form-item label="原料批次编号" prop="materialBatchNo">
         <el-input
           v-model="queryParams.materialBatchNo"
-          placeholder="请输入原料批次编号（供应商操作供，?手工录入）"
+          placeholder="请输入原料批次编号"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="计划用?" prop="plannedQuantity">
+      <el-form-item label="计划用量" prop="plannedQuantity">
         <el-input
           v-model="queryParams.plannedQuantity"
-          placeholder="请输入计划用?"
+          placeholder="请输入计划用量"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="实际用?" prop="actualQuantity">
+      <el-form-item label="实际用量" prop="actualQuantity">
         <el-input
           v-model="queryParams.actualQuantity"
-          placeholder="请输入实际用?"
+          placeholder="请输入实际用量"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="原料本（元）" prop="materialCost">
+      <el-form-item label="原料成本(元)" prop="materialCost">
         <el-input
           v-model="queryParams.materialCost"
-          placeholder="请输入原料本（元）"
+          placeholder="请输入原料成本"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -122,10 +122,10 @@
       <el-table-column label="记录ID" align="center" prop="recordId" />
       <el-table-column label="批次编号" align="center" prop="batchNo" />
       <el-table-column label="原料ID" align="center" prop="materialId" />
-      <el-table-column label="原料批次编号（供应商操作供，?手工录入）" align="center" prop="materialBatchNo" />
-      <el-table-column label="计划用?" align="center" prop="plannedQuantity" />
-      <el-table-column label="实际用?" align="center" prop="actualQuantity" />
-      <el-table-column label="原料本（元）" align="center" prop="materialCost" />
+      <el-table-column label="原料批次编号" align="center" prop="materialBatchNo" />
+      <el-table-column label="计划用量" align="center" prop="plannedQuantity" />
+      <el-table-column label="实际用量" align="center" prop="actualQuantity" />
+      <el-table-column label="原料成本(元)" align="center" prop="materialCost" />
       <el-table-column label="使用时间" align="center" prop="useTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.useTime, '{y}-{m}-{d}') }}</span>
@@ -140,14 +140,14 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:batchmaterial:edit']"
-          >操作</el-button>
+          >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:batchmaterial:remove']"
-          >操作</el-button>
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -169,24 +169,24 @@
         <el-form-item label="原料ID" prop="materialId">
           <el-input v-model="form.materialId" placeholder="请输入原料ID" />
         </el-form-item>
-        <el-form-item label="原料批次编号（供应商操作供，?手工录入）" prop="materialBatchNo">
-          <el-input v-model="form.materialBatchNo" placeholder="请输入原料批次编号（供应商操作供，?手工录入）" />
+        <el-form-item label="原料批次编号" prop="materialBatchNo">
+          <el-input v-model="form.materialBatchNo" placeholder="请输入原料批次编号" />
         </el-form-item>
-        <el-form-item label="计划用?" prop="plannedQuantity">
-          <el-input v-model="form.plannedQuantity" placeholder="请输入计划用?" />
+        <el-form-item label="计划用量" prop="plannedQuantity">
+          <el-input v-model="form.plannedQuantity" placeholder="请输入计划用量" />
         </el-form-item>
-        <el-form-item label="实际用?" prop="actualQuantity">
-          <el-input v-model="form.actualQuantity" placeholder="请输入实际用?" />
+        <el-form-item label="实际用量" prop="actualQuantity">
+          <el-input v-model="form.actualQuantity" placeholder="请输入实际用量" />
         </el-form-item>
-        <el-form-item label="原料本（元）" prop="materialCost">
-          <el-input v-model="form.materialCost" placeholder="请输入原料本（元）" />
+        <el-form-item label="原料成本(元)" prop="materialCost">
+          <el-input v-model="form.materialCost" placeholder="请输入原料成本" />
         </el-form-item>
         <el-form-item label="使用时间" prop="useTime">
           <el-date-picker clearable
             v-model="form.useTime"
             type="date"
             value-format="yyyy-MM-dd"
-            placeholder="请输入使用时间">
+            placeholder="请选择使用时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="操作人" prop="operatorName">
@@ -239,16 +239,16 @@ export default {
       form: {},
       rules: {
         batchNo: [
-          { required: true, message: "批次删除", trigger: "blur" }
+          { required: true, message: "批次编号不能为空", trigger: "blur" }
         ],
         materialId: [
-          { required: true, message: "原料ID请输入", trigger: "blur" }
+          { required: true, message: "原料ID不能为空", trigger: "blur" }
         ],
         plannedQuantity: [
-          { required: true, message: "计划用删除", trigger: "blur" }
+          { required: true, message: "计划用量不能为空", trigger: "blur" }
         ],
         actualQuantity: [
-          { required: true, message: "实际用删除", trigger: "blur" }
+          { required: true, message: "实际用量不能为空", trigger: "blur" }
         ],
       }
     }
@@ -257,7 +257,7 @@ export default {
     this.getList()
   },
   methods: {
-    /** 操作批次原料操作 */
+    /** 查询批次原料列表 */
     getList() {
       this.loading = true
       listBatchmaterial(this.queryParams).then(response => {
@@ -289,12 +289,12 @@ export default {
       }
       this.resetForm("form")
     },
-    /** 请输入 */
+    /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1
       this.getList()
     },
-    /** 请输入 */
+    /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm")
       this.handleQuery()
@@ -304,35 +304,35 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 请输入 */
+    /** 新增按钮操作 */
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = "操作批次原料"
+      this.title = "添加批次原料"
     },
-    /** 请输入 */
+    /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
       const recordId = row.recordId || this.ids
       getBatchmaterial(recordId).then(response => {
         this.form = response.data
         this.open = true
-        this.title = "操作批次原料"
+        this.title = "修改批次原料"
       })
     },
-    /** 请输入 */
+    /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.recordId != null) {
             updateBatchmaterial(this.form).then(response => {
-              this.$modal.msgSuccess("请输入")
+              this.$modal.msgSuccess("修改成功")
               this.open = false
               this.getList()
             })
           } else {
             addBatchmaterial(this.form).then(response => {
-              this.$modal.msgSuccess("请输入")
+              this.$modal.msgSuccess("新增成功")
               this.open = false
               this.getList()
             })
@@ -340,14 +340,14 @@ export default {
         }
       })
     },
-    /** 请输入 */
+    /** 删除按钮操作 */
     handleDelete(row) {
       const recordIds = row.recordId || this.ids
-      this.$modal.confirm('请输入批次原料请输入"' + recordIds + '"删除').then(function() {
+      this.$modal.confirm('是否确认删除批次原料记录ID为"' + recordIds + '"的数据项？').then(function() {
         return delBatchmaterial(recordIds)
       }).then(() => {
         this.getList()
-        this.$modal.msgSuccess("请输入")
+        this.$modal.msgSuccess("删除成功")
       }).catch(() => {})
     },
     /** 请输入 */

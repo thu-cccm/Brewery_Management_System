@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewEquipmentMaintenanceMapper">
+    
+    <resultMap type="BrewEquipmentMaintenance" id="BrewEquipmentMaintenanceResult">
+        <result property="maintenanceId"    column="maintenance_id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="maintenanceDate"    column="maintenance_date"    />
+        <result property="maintenanceType"    column="maintenance_type"    />
+        <result property="content"    column="description"    />
+        <result property="cost"    column="cost"    />
+        <result property="performer"    column="performer"    />
+        <result property="result"    column="result"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectBrewEquipmentMaintenanceVo">
+        select maintenance_id, equipment_id, maintenance_date, maintenance_type, description, cost, performer, result, remark, create_by, create_time, update_by, update_time from brew_equipment_maintenance
+    </sql>
+
+    <select id="selectBrewEquipmentMaintenanceList" parameterType="BrewEquipmentMaintenance" resultMap="BrewEquipmentMaintenanceResult">
+        <include refid="selectBrewEquipmentMaintenanceVo"/>
+        <where>  
+            <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
+            <if test="maintenanceDate != null "> and maintenance_date = #{maintenanceDate}</if>
+            <if test="maintenanceType != null  and maintenanceType != ''"> and maintenance_type = #{maintenanceType}</if>
+            <if test="performer != null  and performer != ''"> and performer like concat('%', #{performer}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectBrewEquipmentMaintenanceByMaintenanceId" parameterType="Long" resultMap="BrewEquipmentMaintenanceResult">
+        <include refid="selectBrewEquipmentMaintenanceVo"/>
+        where maintenance_id = #{maintenanceId}
+    </select>
+        
+    <insert id="insertBrewEquipmentMaintenance" parameterType="BrewEquipmentMaintenance" useGeneratedKeys="true" keyProperty="maintenanceId">
+        insert into brew_equipment_maintenance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="maintenanceDate != null">maintenance_date,</if>
+            <if test="maintenanceType != null">maintenance_type,</if>
+            <if test="content != null">description,</if>
+            <if test="cost != null">cost,</if>
+            <if test="performer != null">performer,</if>
+            <if test="result != null">result,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="maintenanceDate != null">#{maintenanceDate},</if>
+            <if test="maintenanceType != null">#{maintenanceType},</if>
+            <if test="content != null">#{content},</if>
+            <if test="cost != null">#{cost},</if>
+            <if test="performer != null">#{performer},</if>
+            <if test="result != null">#{result},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewEquipmentMaintenance" parameterType="BrewEquipmentMaintenance">
+        update brew_equipment_maintenance
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="maintenanceDate != null">maintenance_date = #{maintenanceDate},</if>
+            <if test="maintenanceType != null">maintenance_type = #{maintenanceType},</if>
+            <if test="content != null">description = #{content},</if>
+            <if test="cost != null">cost = #{cost},</if>
+            <if test="performer != null">performer = #{performer},</if>
+            <if test="result != null">result = #{result},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where maintenance_id = #{maintenanceId}
+    </update>
+
+    <delete id="deleteBrewEquipmentMaintenanceByMaintenanceId" parameterType="Long">
+        delete from brew_equipment_maintenance where maintenance_id = #{maintenanceId}
+    </delete>
+
+    <delete id="deleteBrewEquipmentMaintenanceByMaintenanceIds" parameterType="String">
+        delete from brew_equipment_maintenance where maintenance_id in 
+        <foreach item="maintenanceId" collection="array" open="(" separator="," close=")">
+            #{maintenanceId}
+        </foreach>
+    </delete>
+</mapper>

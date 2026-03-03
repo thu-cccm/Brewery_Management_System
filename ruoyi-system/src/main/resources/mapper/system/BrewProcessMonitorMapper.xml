@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewProcessMonitorMapper">
+    
+    <resultMap type="BrewProcessMonitor" id="BrewProcessMonitorResult">
+        <result property="monitorId"    column="monitor_id"    />
+        <result property="batchId"    column="batch_id"    />
+        <result property="stageKey"    column="stage_key"    />
+        <result property="recordTime"    column="record_time"    />
+        <result property="temperature"    column="temperature"    />
+        <result property="pressure"    column="pressure"    />
+        <result property="sugarDegree"    column="sugar_degree"    />
+        <result property="phValue"    column="ph_value"    />
+        <result property="alcohol"    column="alcohol"    />
+        <result property="operator"    column="operator"    />
+        <result property="isAbnormal"    column="is_abnormal"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectBrewProcessMonitorVo">
+        select monitor_id, batch_id, stage_key, record_time, temperature, pressure, sugar_degree, ph_value, alcohol, operator, is_abnormal, remark, create_time from brew_process_monitor
+    </sql>
+
+    <select id="selectBrewProcessMonitorList" parameterType="BrewProcessMonitor" resultMap="BrewProcessMonitorResult">
+        <include refid="selectBrewProcessMonitorVo"/>
+        <where>  
+            <if test="batchId != null "> and batch_id = #{batchId}</if>
+            <if test="stageKey != null  and stageKey != ''"> and stage_key = #{stageKey}</if>
+            <if test="operator != null  and operator != ''"> and operator like concat('%', #{operator}, '%')</if>
+            <if test="isAbnormal != null  and isAbnormal != ''"> and is_abnormal = #{isAbnormal}</if>
+        </where>
+        order by record_time desc
+    </select>
+    
+    <select id="selectBrewProcessMonitorByMonitorId" parameterType="Long" resultMap="BrewProcessMonitorResult">
+        <include refid="selectBrewProcessMonitorVo"/>
+        where monitor_id = #{monitorId}
+    </select>
+        
+    <insert id="insertBrewProcessMonitor" parameterType="BrewProcessMonitor" useGeneratedKeys="true" keyProperty="monitorId">
+        insert into brew_process_monitor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchId != null">batch_id,</if>
+            <if test="stageKey != null and stageKey != ''">stage_key,</if>
+            <if test="recordTime != null">record_time,</if>
+            <if test="temperature != null">temperature,</if>
+            <if test="pressure != null">pressure,</if>
+            <if test="sugarDegree != null">sugar_degree,</if>
+            <if test="phValue != null">ph_value,</if>
+            <if test="alcohol != null">alcohol,</if>
+            <if test="operator != null">operator,</if>
+            <if test="isAbnormal != null">is_abnormal,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchId != null">#{batchId},</if>
+            <if test="stageKey != null and stageKey != ''">#{stageKey},</if>
+            <if test="recordTime != null">#{recordTime},</if>
+            <if test="temperature != null">#{temperature},</if>
+            <if test="pressure != null">#{pressure},</if>
+            <if test="sugarDegree != null">#{sugarDegree},</if>
+            <if test="phValue != null">#{phValue},</if>
+            <if test="alcohol != null">#{alcohol},</if>
+            <if test="operator != null">#{operator},</if>
+            <if test="isAbnormal != null">#{isAbnormal},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewProcessMonitor" parameterType="BrewProcessMonitor">
+        update brew_process_monitor
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchId != null">batch_id = #{batchId},</if>
+            <if test="stageKey != null and stageKey != ''">stage_key = #{stageKey},</if>
+            <if test="recordTime != null">record_time = #{recordTime},</if>
+            <if test="temperature != null">temperature = #{temperature},</if>
+            <if test="pressure != null">pressure = #{pressure},</if>
+            <if test="sugarDegree != null">sugar_degree = #{sugarDegree},</if>
+            <if test="phValue != null">ph_value = #{phValue},</if>
+            <if test="alcohol != null">alcohol = #{alcohol},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="isAbnormal != null">is_abnormal = #{isAbnormal},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where monitor_id = #{monitorId}
+    </update>
+
+    <delete id="deleteBrewProcessMonitorByMonitorId" parameterType="Long">
+        delete from brew_process_monitor where monitor_id = #{monitorId}
+    </delete>
+
+    <delete id="deleteBrewProcessMonitorByMonitorIds" parameterType="String">
+        delete from brew_process_monitor where monitor_id in 
+        <foreach item="monitorId" collection="array" open="(" separator="," close=")">
+            #{monitorId}
+        </foreach>
+    </delete>
+</mapper>

@@ -26,7 +26,7 @@
 
     <el-row :gutter="20" class="summary-row">
       <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="summary-card production">
+        <el-card class="summary-card production" @click.native="handleCardClick('production')">
           <div class="summary-icon"><i class="el-icon-s-goods"></i></div>
           <div class="summary-info">
             <div class="summary-value">{{ summary.activePlans || 0 }}</div>
@@ -35,7 +35,7 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="summary-card batch">
+        <el-card class="summary-card batch" @click.native="handleCardClick('batch')">
           <div class="summary-icon"><i class="el-icon-s-order"></i></div>
           <div class="summary-info">
             <div class="summary-value">{{ summary.activeBatches || 0 }}</div>
@@ -44,7 +44,7 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="summary-card output">
+        <el-card class="summary-card output" @click.native="handleCardClick('output')">
           <div class="summary-icon"><i class="el-icon-s-data"></i></div>
           <div class="summary-info">
             <div class="summary-value">{{ summary.monthlyOutput || 0 }} <small>L</small></div>
@@ -53,7 +53,7 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="summary-card cost">
+        <el-card class="summary-card cost" @click.native="handleCardClick('cost')">
           <div class="summary-icon"><i class="el-icon-money"></i></div>
           <div class="summary-info">
             <div class="summary-value">{{ formatMoney(summary.monthlyCost) }}</div>
@@ -67,13 +67,15 @@
       <el-col :xs="24" :lg="12">
         <el-card>
           <div slot="header"><span><i class="el-icon-s-marketing"></i> 计划产量 vs 实际产量</span></div>
-          <div ref="productionChart" class="chart-container"></div>
+          <div ref="productionChart" class="chart-container" v-loading="chartLoading"></div>
+          <el-empty v-if="!chartLoading && (!productionData.xAxis || productionData.xAxis.length === 0)" description="暂无数据" :image-size="100"></el-empty>
         </el-card>
       </el-col>
       <el-col :xs="24" :lg="12">
         <el-card>
           <div slot="header"><span><i class="el-icon-data-line"></i> 单位成本趋势</span></div>
-          <div ref="costChart" class="chart-container"></div>
+          <div ref="costChart" class="chart-container" v-loading="chartLoading"></div>
+          <el-empty v-if="!chartLoading && (!costData.xAxis || costData.xAxis.length === 0)" description="暂无数据" :image-size="100"></el-empty>
         </el-card>
       </el-col>
     </el-row>
@@ -108,7 +110,8 @@ export default {
       productionData: { xAxis: [], planSeries: [], actualSeries: [] },
       costData: { xAxis: [], unitCostSeries: [] },
       productionChart: null,
-      costChart: null
+      costChart: null,
+      chartLoading: true
     }
   },
   mounted() {
@@ -135,6 +138,7 @@ export default {
       if (this.costChart) this.costChart.resize()
     },
     loadDashboardData() {
+      this.chartLoading = true
       getDashboardData().then(response => {
         const data = response.data
         this.warningList = data.materialWarningList || []
@@ -147,11 +151,17 @@ export default {
           this.costData = data.costTrend
         }
         
-        this.renderProductionChart()
-        this.renderCostChart()
+        this.chartLoading = false
+        this.$nextTick(() => {
+          this.renderProductionChart()
+          this.renderCostChart()
+        })
       }).catch(() => {
-        this.renderProductionChart()
-        this.renderCostChart()
+        this.chartLoading = false
+        this.$nextTick(() => {
+          this.renderProductionChart()
+          this.renderCostChart()
+        })
       })
     },
     renderProductionChart() {
@@ -182,9 +192,15 @@ export default {
       const option = {
         tooltip: { trigger: 'axis' },
         legend: { data: ['单位成本'], bottom: 0 },
-        grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+        grid: { left: '50px', right: '4%', bottom: '15%', top: '10%', containLabel: true },
         xAxis: { type: 'category', data: this.costData.xAxis || [] },
-        yAxis: { type: 'value', name: '成本(元/L)' },
+        yAxis: { 
+          type: 'value', 
+          name: '成本(元/L)', 
+          nameGap: 25,
+          scale: true, // 开启自动缩放
+          splitNumber: 5 // 调整刻度数量
+        },
         series: [
           {
             name: '单位成本',
@@ -197,6 +213,22 @@ export default {
         ]
       }
       this.costChart.setOption(option)
+    },
+    handleCardClick(type) {
+      switch (type) {
+        case 'production':
+          this.$router.push('/production/plan')
+          break
+        case 'batch':
+          this.$router.push('/production/batch')
+          break
+        case 'output':
+          this.$router.push('/stats/analysis')
+          break
+        case 'cost':
+          this.$router.push('/stats/analysis')
+          break
+      }
     }
   }
 }

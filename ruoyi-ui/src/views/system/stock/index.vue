@@ -9,34 +9,42 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="?动数?（正数入库，负数出库）" prop="changeQuantity">
+      <el-form-item label="变动数量" prop="changeQuantity">
         <el-input
           v-model="queryParams.changeQuantity"
-          placeholder="请输入动数?（正数入库，负数出库）"
+          placeholder="请输入变动数量"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="?动?库存" prop="beforeQuantity">
+      <el-form-item label="变动类型" prop="changeType">
+        <el-select v-model="queryParams.changeType" placeholder="请选择变动类型" clearable>
+          <el-option label="入库" value="1" />
+          <el-option label="出库" value="2" />
+          <el-option label="盘点" value="3" />
+          <el-option label="报损" value="4" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="变动前库存" prop="beforeQuantity">
         <el-input
           v-model="queryParams.beforeQuantity"
-          placeholder="请输入动库存"
+          placeholder="请输入变动前库存"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="?动?库存" prop="afterQuantity">
+      <el-form-item label="变动后库存" prop="afterQuantity">
         <el-input
           v-model="queryParams.afterQuantity"
-          placeholder="请输入动库存"
+          placeholder="请输入变动后库存"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="关批次编号（入库时填供应商批次，出库时填生产批次）" prop="relatedBatchNo">
+      <el-form-item label="关联批次编号" prop="relatedBatchNo">
         <el-input
           v-model="queryParams.relatedBatchNo"
-          placeholder="请输入关批次编号（入库时填供应商批次，出库时填生产批次）"
+          placeholder="请输入关联批次编号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -105,13 +113,27 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="记录ID" align="center" prop="recordId" />
       <el-table-column label="原料ID" align="center" prop="materialId" />
-      <el-table-column label="?动类型（1入库 2出库 3盘点 4报?）" align="center" prop="changeType" />
-      <el-table-column label="?动数?（正数入库，负数出库）" align="center" prop="changeQuantity" />
-      <el-table-column label="?动?库存" align="center" prop="beforeQuantity" />
-      <el-table-column label="?动?库存" align="center" prop="afterQuantity" />
-      <el-table-column label="关批次编号（入库时填供应商批次，出库时填生产批次）" align="center" prop="relatedBatchNo" />
+      <el-table-column label="变动类型" align="center" prop="changeType">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.changeType == '1'" type="success">入库</el-tag>
+          <el-tag v-else-if="scope.row.changeType == '2'" type="warning">出库</el-tag>
+          <el-tag v-else-if="scope.row.changeType == '3'" type="info">盘点</el-tag>
+          <el-tag v-else-if="scope.row.changeType == '4'" type="danger">报损</el-tag>
+          <span v-else>{{ scope.row.changeType }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="变动数量" align="center" prop="changeQuantity">
+        <template slot-scope="scope">
+          <span :style="{ color: scope.row.changeQuantity > 0 ? 'green' : 'red' }">
+            {{ scope.row.changeQuantity > 0 ? '+' + scope.row.changeQuantity : scope.row.changeQuantity }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="变动前库存" align="center" prop="beforeQuantity" />
+      <el-table-column label="变动后库存" align="center" prop="afterQuantity" />
+      <el-table-column label="关联批次编号" align="center" prop="relatedBatchNo" />
       <el-table-column label="操作人" align="center" prop="operatorName" />
-      <el-table-column label="?动原因" align="center" prop="changeReason" />
+      <el-table-column label="变动原因" align="center" prop="changeReason" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -142,27 +164,27 @@
 
     <!-- 删除对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="原料ID" prop="materialId">
           <el-input v-model="form.materialId" placeholder="请输入原料ID" />
         </el-form-item>
-        <el-form-item label="?动数?（正数入库，负数出库）" prop="changeQuantity">
-          <el-input v-model="form.changeQuantity" placeholder="请输入动数?（正数入库，负数出库）" />
+        <el-form-item label="变动数量" prop="changeQuantity">
+          <el-input v-model="form.changeQuantity" placeholder="请输入变动数量（正数入库，负数出库）" />
         </el-form-item>
-        <el-form-item label="?动?库存" prop="beforeQuantity">
-          <el-input v-model="form.beforeQuantity" placeholder="请输入动库存" />
+        <el-form-item label="变动前库存" prop="beforeQuantity">
+          <el-input v-model="form.beforeQuantity" placeholder="请输入变动前库存" />
         </el-form-item>
-        <el-form-item label="?动?库存" prop="afterQuantity">
-          <el-input v-model="form.afterQuantity" placeholder="请输入动库存" />
+        <el-form-item label="变动后库存" prop="afterQuantity">
+          <el-input v-model="form.afterQuantity" placeholder="请输入变动后库存" />
         </el-form-item>
-        <el-form-item label="关批次编号（入库时填供应商批次，出库时填生产批次）" prop="relatedBatchNo">
-          <el-input v-model="form.relatedBatchNo" placeholder="请输入关批次编号（入库时填供应商批次，出库时填生产批次）" />
+        <el-form-item label="关联批次编号" prop="relatedBatchNo">
+          <el-input v-model="form.relatedBatchNo" placeholder="请输入关联批次编号" />
         </el-form-item>
         <el-form-item label="操作人" prop="operatorName">
           <el-input v-model="form.operatorName" placeholder="请输入操作人" />
         </el-form-item>
-        <el-form-item label="?动原因" prop="changeReason">
-          <el-input v-model="form.changeReason" type="textarea" placeholder="删除" />
+        <el-form-item label="变动原因" prop="changeReason">
+          <el-input v-model="form.changeReason" type="textarea" placeholder="请输入变动原因" />
         </el-form-item>
         <el-form-item label="删除标志（0代表存在 2代表删除）" prop="delFlag">
           <el-input v-model="form.delFlag" placeholder="请输入删除标志（0代表存在 2代表删除）" />
@@ -211,19 +233,19 @@ export default {
       form: {},
       rules: {
         materialId: [
-          { required: true, message: "原料ID请输入", trigger: "blur" }
+          { required: true, message: "原料ID不能为空", trigger: "blur" }
         ],
         changeType: [
-          { required: true, message: "?动类型（1入库 2出库 3盘点 4报?）请输入", trigger: "change" }
+          { required: true, message: "请选择变动类型", trigger: "change" }
         ],
         changeQuantity: [
-          { required: true, message: "?动数?（正数入库，负数出库）请输入", trigger: "blur" }
+          { required: true, message: "变动数量不能为空", trigger: "blur" }
         ],
         beforeQuantity: [
-          { required: true, message: "?动?库存请输入", trigger: "blur" }
+          { required: true, message: "变动前库存不能为空", trigger: "blur" }
         ],
         afterQuantity: [
-          { required: true, message: "?动?库存请输入", trigger: "blur" }
+          { required: true, message: "变动后库存不能为空", trigger: "blur" }
         ],
       }
     }

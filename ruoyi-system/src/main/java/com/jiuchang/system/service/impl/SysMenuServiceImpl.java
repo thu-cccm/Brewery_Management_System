@@ -435,6 +435,11 @@ public class SysMenuServiceImpl implements ISysMenuService
         {
             routerPath = innerLinkReplaceEach(routerPath);
         }
+        // 处理外链路径，确保以/开头（避免vue-router警告）
+        if (isInnerLink(menu) && StringUtils.ishttp(routerPath))
+        {
+            routerPath = "/external" + routerPath.replaceAll("^https?://", "/").replaceAll("\\.", "_");
+        }
         // 非外链并且是一级目录（类型为目录）
         if (MENU_ROOT_ID == menu.getParentId().intValue() && UserConstants.TYPE_DIR.equals(menu.getMenuType())
                 && UserConstants.NO_FRAME.equals(menu.getIsFrame()))

@@ -134,7 +134,7 @@ export const dynamicRoutes = [
       }
     ]
   },
-  // TODO: 定时任务模块（ruoyi-quartz）已移除，临时注释相关路由
+  // 定时任务模块已移除
   // {
   //   path: '/monitor/job-log',
   //   component: Layout,

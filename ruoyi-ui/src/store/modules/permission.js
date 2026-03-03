@@ -5,6 +5,38 @@ import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
 
+// 使用require.context预加载所有views目录下的组件
+// 这样webpack就能在编译时知道所有组件，避免运行时找不到模块
+// 使用 'lazy' 模式进行代码分割，提高性能
+const viewsContext = require.context('@/views', true, /\.vue$/, 'lazy')
+
+// 创建路径映射表：将标准路径映射到require.context的key
+const viewsMap = {}
+viewsContext.keys().forEach(key => {
+  // require.context返回的key格式：'./system/post/index.vue'
+  // 转换为标准格式：'system/post/index'
+  const normalizedKey = key.replace(/^\.\//, '').replace(/\.vue$/, '')
+  viewsMap[normalizedKey] = key
+  
+  // 同时支持不带index的路径：system/post -> system/post/index
+  if (normalizedKey.endsWith('/index')) {
+    const withoutIndex = normalizedKey.replace(/\/index$/, '')
+    if (!viewsMap[withoutIndex]) {
+      viewsMap[withoutIndex] = key
+    }
+  }
+})
+
+// 调试：检查用户管理组件是否被正确扫描
+if (process.env.NODE_ENV === 'development') {
+  const userKeys = Object.keys(viewsMap).filter(k => k.includes('user'))
+  if (userKeys.length > 0) {
+    console.log('User components found in viewsMap:', userKeys)
+  } else {
+    console.warn('No user components found in viewsMap!')
+  }
+}
+
 const permission = {
   state: {
     routes: [],
@@ -110,13 +142,116 @@ export function filterDynamicRoutes(routes) {
   return res
 }
 
+// 组件加载缓存
+const componentCache = {}
+
+// 路径映射表：将后端返回的component路径映射到实际的文件路径
+const componentPathMap = {
+  'system/post/index': 'system/post/index',
+  'system/post': 'system/post/index',
+  'system/menu/index': 'system/menu/index',
+  'system/menu': 'system/menu/index',
+  'system/dept/index': 'system/dept/index',
+  'system/dept': 'system/dept/index',
+  'system/role/index': 'system/role/index',
+  'system/role': 'system/role/index',
+  'system/user/index': 'system/user/index',
+  'system/user': 'system/user/index',
+  'system/notice/index': 'system/notice/index',
+  'system/notice': 'system/notice/index',
+  'system/log/operlog': 'monitor/operlog/index',
+  'system/log/logininfor': 'monitor/logininfor/index'
+}
+
 export const loadView = (view) => {
-  if (process.env.NODE_ENV === 'development') {
-    return (resolve) => require([`@/views/${view}`], resolve)
-  } else {
-    // 使用 import 实现生产环境的路由懒加载
-    return () => import(`@/views/${view}`)
+  // 缓存检查
+  if (componentCache[view]) {
+    return componentCache[view]
   }
+  
+  // 规范化路径：使用映射表或直接使用view
+  let normalizedView = componentPathMap[view] || view
+  
+  // 移除可能的.vue扩展名
+  normalizedView = normalizedView.replace(/\.vue$/, '')
+  
+  // 确保路径不以/开头
+  if (normalizedView.startsWith('/')) {
+    normalizedView = normalizedView.substring(1)
+  }
+  
+  // 从viewsMap中查找对应的require.context key
+  // 尝试多种匹配方式
+  let contextKey = viewsMap[normalizedView] || 
+                   viewsMap[normalizedView + '/index'] ||
+                   viewsMap[normalizedView.replace(/\/$/, '')] ||
+                   viewsMap[normalizedView.replace(/\/$/, '') + '/index']
+  
+  // 调试信息：只在开发环境且是用户管理相关路径时输出
+  if (process.env.NODE_ENV === 'development' && normalizedView.includes('user')) {
+    console.log(`[loadView] Loading component:`, {
+      originalView: view,
+      normalizedView: normalizedView,
+      contextKeyFound: !!contextKey,
+      contextKey: contextKey,
+      viewsMapHasKey: viewsMap.hasOwnProperty(normalizedView),
+      viewsMapHasKeyWithIndex: viewsMap.hasOwnProperty(normalizedView + '/index')
+    })
+  }
+  
+  if (contextKey) {
+    // 使用require.context加载组件（webpack已预知所有路径）
+    // require.context在lazy模式下返回一个函数，调用后返回Promise
+    const component = () => {
+      try {
+        // viewsContext(contextKey) 返回一个Promise
+        // 注意：require.context在lazy模式下，contextKey应该是相对路径（如'./system/user/index.vue'）
+        return viewsContext(contextKey)
+          .then(module => {
+            // 确保返回默认导出，Vue组件通常在default中
+            const component = module.default || module.__esModule && module.default || module
+            if (!component) {
+              console.error(`Component module has no default export:`, module)
+              throw new Error(`Component ${normalizedView} has no default export`)
+            }
+            return component
+          })
+          .catch(error => {
+            // 如果require.context失败，尝试动态import
+            console.error(`Failed to load via require.context: ${normalizedView}`, error)
+            console.error('Context key:', contextKey)
+            return import(/* webpackChunkName: "[request]" */ `@/views/${normalizedView}`)
+              .then(module => module.default || module)
+              .catch(() => import('@/views/error/404').then(m => m.default || m))
+          })
+      } catch (error) {
+        // 如果调用viewsContext时出错，使用动态import
+        console.error(`Error calling viewsContext for ${normalizedView}:`, error)
+        return import(/* webpackChunkName: "[request]" */ `@/views/${normalizedView}`)
+          .then(module => module.default || module)
+          .catch(() => import('@/views/error/404').then(m => m.default || m))
+      }
+    }
+    componentCache[view] = component
+    return component
+  }
+  
+  // 如果找不到，使用动态import作为后备方案
+  // 对于用户管理等标准页面，直接使用动态import应该可以工作
+  const component = () => {
+    return import(/* webpackChunkName: "[request]" */ `@/views/${normalizedView}`)
+      .catch(error => {
+        // 如果加载失败，返回404页面
+        console.error(`Failed to load component: @/views/${normalizedView}`, error)
+        console.error('Original view path:', view)
+        console.error('Normalized view:', normalizedView)
+        console.error('Available viewsMap keys:', Object.keys(viewsMap).filter(k => k.includes('user') || k.includes(normalizedView.split('/')[0])))
+        return import('@/views/error/404')
+      })
+  }
+  
+  componentCache[view] = component
+  return component
 }
 
 export default permission

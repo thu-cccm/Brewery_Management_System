@@ -9,7 +9,7 @@ const CompressionPlugin = require('compression-webpack-plugin')
 
 const name = process.env.VUE_APP_TITLE || '酒厂生产质量管理系统' // 网页标题
 
-const baseUrl = 'http://localhost:8080' // 后端接口
+const baseUrl = 'http://127.0.0.1:8092' // 后端接口，使用IP避免Windows下localhost解析为IPv6导致连接失败
 
 const port = process.env.port || process.env.npm_config_port || 8081 // 端口
 
@@ -30,16 +30,16 @@ module.exports = {
   transpileDependencies: ['quill'],
   // webpack-dev-server 相关配置
   devServer: {
-    host: '0.0.0.0',
+    host: 'localhost',
     port: port,
     open: true,
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
+      ['/dev-api']: {
         target: baseUrl,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          ['^/dev-api']: ''
         }
       },
       // springdoc proxy

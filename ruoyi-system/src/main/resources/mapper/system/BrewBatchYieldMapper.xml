@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiuchang.system.mapper.BrewBatchYieldMapper">
+    
+    <resultMap type="BrewBatchYield" id="BrewBatchYieldResult">
+        <result property="yieldId"    column="yield_id"    />
+        <result property="batchId"    column="batch_id"    />
+        <result property="stageKey"    column="stage_key"    />
+        <result property="inputQty"    column="input_qty"    />
+        <result property="outputQty"    column="output_qty"    />
+        <result property="lossQty"    column="loss_qty"    />
+        <result property="lossRate"    column="loss_rate"    />
+        <result property="unit"    column="unit"    />
+        <result property="isAbnormal"    column="is_abnormal"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBrewBatchYieldVo">
+        select yield_id, batch_id, stage_key, input_qty, output_qty, loss_qty, loss_rate, unit, is_abnormal, remark, create_by, create_time, update_by, update_time from brew_batch_yield
+    </sql>
+
+    <select id="selectBrewBatchYieldList" parameterType="BrewBatchYield" resultMap="BrewBatchYieldResult">
+        <include refid="selectBrewBatchYieldVo"/>
+        <where>  
+            <if test="batchId != null "> and batch_id = #{batchId}</if>
+            <if test="stageKey != null  and stageKey != ''"> and stage_key = #{stageKey}</if>
+            <if test="isAbnormal != null  and isAbnormal != ''"> and is_abnormal = #{isAbnormal}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectBrewBatchYieldByYieldId" parameterType="Long" resultMap="BrewBatchYieldResult">
+        <include refid="selectBrewBatchYieldVo"/>
+        where yield_id = #{yieldId}
+    </select>
+        
+    <insert id="insertBrewBatchYield" parameterType="BrewBatchYield" useGeneratedKeys="true" keyProperty="yieldId">
+        insert into brew_batch_yield
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchId != null">batch_id,</if>
+            <if test="stageKey != null and stageKey != ''">stage_key,</if>
+            <if test="inputQty != null">input_qty,</if>
+            <if test="outputQty != null">output_qty,</if>
+            <if test="lossQty != null">loss_qty,</if>
+            <if test="lossRate != null">loss_rate,</if>
+            <if test="unit != null">unit,</if>
+            <if test="isAbnormal != null">is_abnormal,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchId != null">#{batchId},</if>
+            <if test="stageKey != null and stageKey != ''">#{stageKey},</if>
+            <if test="inputQty != null">#{inputQty},</if>
+            <if test="outputQty != null">#{outputQty},</if>
+            <if test="lossQty != null">#{lossQty},</if>
+            <if test="lossRate != null">#{lossRate},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="isAbnormal != null">#{isAbnormal},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBrewBatchYield" parameterType="BrewBatchYield">
+        update brew_batch_yield
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchId != null">batch_id = #{batchId},</if>
+            <if test="stageKey != null and stageKey != ''">stage_key = #{stageKey},</if>
+            <if test="inputQty != null">input_qty = #{inputQty},</if>
+            <if test="outputQty != null">output_qty = #{outputQty},</if>
+            <if test="lossQty != null">loss_qty = #{lossQty},</if>
+            <if test="lossRate != null">loss_rate = #{lossRate},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="isAbnormal != null">is_abnormal = #{isAbnormal},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where yield_id = #{yieldId}
+    </update>
+
+    <delete id="deleteBrewBatchYieldByYieldId" parameterType="Long">
+        delete from brew_batch_yield where yield_id = #{yieldId}
+    </delete>
+
+    <delete id="deleteBrewBatchYieldByYieldIds" parameterType="String">
+        delete from brew_batch_yield where yield_id in 
+        <foreach item="yieldId" collection="array" open="(" separator="," close=")">
+            #{yieldId}
+        </foreach>
+    </delete>
+</mapper>
